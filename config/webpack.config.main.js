@@ -9,15 +9,31 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.m?js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            babelrc: false,
-            ...babel(env, 'main'),
+        oneOf: [
+          {
+            test: /\.m?js$/,
+            exclude: /node_modules/,
+            use: {
+              loader: 'babel-loader',
+              options: {
+                babelrc: false,
+                ...babel(env, 'main'),
+              },
+            },
           },
-        },
+          {
+            test: /\.(svg|jpg|png)$/,
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  emitFile: true,
+                  // name: '[path][name].[ext]',
+                },
+              },
+            ],
+          },
+        ],
       },
     ],
   },

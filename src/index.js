@@ -1,70 +1,89 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+/* globals MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY, MAIN_WINDOW_WEBPACK_ENTRY  */
+import path from 'path';
+import fs from 'fs';
+import { app, nativeImage } from 'electron';
+import debug from 'electron-debug';
+import { is } from 'electron-util';
+import { installDevTools } from './utils/install-dev-tools';
+import { windowCache } from './utils/caches';
+import { createWindow, createTray } from './utils/create';
+import iconPath from './assets/tray-icon.png';
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-const windowCache = new Map();
-
-const createWindow = () => {
-  // Create the browser window.
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+const createMainWindow = async () => {
+  const win = await createWindow('main', {
+    width: 300,
+    height: 350,
+    show: false,
+    frame: false,
+    resizable: false,
     webPreferences: {
-      // preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      nodeIntegration: false,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
 
-  windowCache.set('main', win);
-
-  // and load the index.html of the app.
-  // eslint-disable-next-line
   win.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // Open the DevTools.
-  win.webContents.openDevTools({ mode: 'detach' });
+  if (is.development) {
+    // Install and open the DevTools.
+    await installDevTools();
+  }
 
-  // Emitted when the window is closed.
-  win.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    windowCache.delete('main');
-  });
+  return win;
 };
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
-app.on('ready', () => {
-  let count = 0;
+const createMainTray = async () => {
+  const icon = nativeImage.createFromPath(path.join(__dirname, iconPath));
+  const tray = createTray('main', icon);
+  return tray;
+};
 
-  ipcMain.on('count-inc', event => {
-    count += 1;
-    event.sender.send('count-updated', count);
-  });
+const showWindow = (win, tray) => {
+  const trayPos = tray.getBounds();
+  const windowPos = win.getBounds();
 
-  ipcMain.on('count-dec', event => {
-    count -= 1;
-    event.sender.send('count-updated', count);
+  const x = Math.round(trayPos.x + trayPos.width / 2 - windowPos.width / 2);
+  const y = Math.round(trayPos.y + trayPos.height) + 10;
+
+  win.setPosition(x, y, false);
+  win.show();
+  win.focus();
+};
+
+const toggleWindow = (win, tray) => {
+  if (win.isVisible()) {
+    win.hide();
+  } else {
+    showWindow(win, tray);
+    if (is.development) {
+      debug();
+      win.webContents.openDevTools({ mode: 'detach' });
+    }
+  }
+};
+
+app.on('ready', async () => {
+  const tray = await createMainTray();
+  const win = await createMainWindow();
+
+  app.dock.hide();
+
+  tray.on('click', () => toggleWindow(win, tray));
+
+  win.on('blur', () => {
+    if (!win.webContents.isDevToolsOpened()) {
+      win.hide();
+    }
   });
 });
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  if (!is.macos) app.quit();
 });
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (!windowCache.has('main')) {
-    createWindow();
-  }
+  if (!windowCache.has('main')) createMainWindow();
 });
 
 // In this file you can include the rest of your app's specific main process
