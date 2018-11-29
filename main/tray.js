@@ -1,17 +1,16 @@
 'use strict';
 
 const path = require('path');
-const { Tray, nativeImage } = require('electron');
-const { openFilePicker } = require('./file-picker');
+const { Tray } = require('electron');
+const { toggleFilePicker } = require('./file-picker');
 
 let tray = null;
 
 function initializeTray() {
   const iconPath = path.join(__dirname, '../static/trayIconTemplate.png');
-  const icon = nativeImage.createFromPath(iconPath);
-  tray = new Tray(icon);
+  tray = new Tray(iconPath);
 
-  tray.on('click', openFilePicker);
+  tray.on('click', toggleFilePicker);
 }
 
 module.exports = { initializeTray };

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useReady } from '../hooks';
 
 function FilePicker() {
   const [count, setCount] = useState(0);
+  useReady('file-picker');
 
   return (
     <div>

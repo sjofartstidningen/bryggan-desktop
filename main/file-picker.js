@@ -1,6 +1,7 @@
 'use strict';
 
 const { BrowserWindow } = require('electron');
+const ipc = require('electron-better-ipc');
 const { loadRoute } = require('./utils/routes');
 const { windows } = require('./utils/cache');
 
@@ -12,9 +13,7 @@ const closeExistingFilePicker = () => {
   }
 };
 
-function openFilePicker() {
-  closeExistingFilePicker();
-
+function createFilePicker() {
   const filePicker = new BrowserWindow({
     width: 300,
     height: 350,
@@ -28,8 +27,7 @@ function openFilePicker() {
     center: true,
     show: false,
     webPreferences: {
-      preload: require.resolve('./utils/preload.js'),
-      nodeIntegration: false,
+      nodeIntegration: true,
       webSecurity: true,
     },
   });
@@ -37,12 +35,10 @@ function openFilePicker() {
   windows.set('file-picker', filePicker);
   loadRoute(filePicker, 'file-picker');
 
-  filePicker.webContents.on('did-finish-load', () => {
-    filePicker.show();
-    filePicker.focus();
-  });
+  ipc.answerRenderer('file-picker-ready', () => filePicker.show());
 
   filePicker.on('closed', closeExistingFilePicker);
+
   filePicker.on('blur', () => {
     if (!filePicker.webContents.isDevToolsFocused()) {
       closeExistingFilePicker();
@@ -50,4 +46,23 @@ function openFilePicker() {
   });
 }
 
-module.exports = { openFilePicker };
+const openFilePicker = () => {
+  closeExistingFilePicker();
+  createFilePicker();
+};
+
+const toggleFilePicker = () => {
+  if (!windows.has('file-picker')) {
+    createFilePicker();
+  } else {
+    const filePicker = windows.get('file-picker');
+    if (filePicker.isVisible()) {
+      closeExistingFilePicker();
+    } else {
+      filePicker.show();
+      filePicker.focus();
+    }
+  }
+};
+
+module.exports = { createFilePicker, openFilePicker, toggleFilePicker };
