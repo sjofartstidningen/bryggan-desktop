@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Index() {
+function FilePicker() {
   const [count, setCount] = useState(0);
 
   return (
@@ -14,4 +14,4 @@ function Index() {
   );
 }
 
-export default Index;
+export default FilePicker;

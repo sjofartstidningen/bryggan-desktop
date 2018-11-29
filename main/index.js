@@ -1,23 +1,19 @@
 'use strict';
 
-const { app, BrowserWindow } = require('electron');
+const path = require('path');
+const { app } = require('electron');
 const prepareNext = require('electron-next');
-const { loadRoute } = require('./utils/routes');
+const { initializeTray } = require('./tray');
+const { installDevTools } = require('./utils/dev-tools');
 
 (async () => {
   await app.whenReady();
-  await prepareNext('./renderer');
+  app.dock.hide();
 
-  const win = new BrowserWindow({
-    width: 300,
-    height: 350,
-    show: true,
-    frame: false,
-    resizable: false,
-    webPreferences: {},
-  });
+  await installDevTools();
+  await prepareNext(path.join(__dirname, '../renderer'));
 
-  loadRoute(win, 'main');
+  initializeTray();
 })();
 
 app.on('window-all-closed', event => event.preventDefault());
