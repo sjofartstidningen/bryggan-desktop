@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
-function App() {
+function Index() {
   const [count, setCount] = useState(0);
 
   return (
     <div>
-      <p>Count: {count}</p>
+      <p>{count}</p>
       <div>
         <button onClick={() => setCount(count + 1)}>+</button>
         <button onClick={() => setCount(count - 1)}>-</button>
@@ -14,4 +14,4 @@ function App() {
   );
 }
 
-export { App as default };
+export default Index;
