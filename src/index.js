@@ -1,11 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  // eslint-disable-line global-require
-  app.quit();
-}
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 const windowCache = new Map();
@@ -23,6 +17,7 @@ const createWindow = () => {
   windowCache.set('main', win);
 
   // and load the index.html of the app.
+  // eslint-disable-next-line
   win.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.

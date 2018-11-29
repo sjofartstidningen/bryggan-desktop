@@ -10,14 +10,17 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish"
   },
-  "keywords": [],
-  "author": "adambergman",
+  "repository": "git@github.com:sjofartstidningen/bryggan-desktop.git",
+  "author": "Adam Bergman <adam@fransvilhelm.com>",
   "license": "MIT",
-  "config": {
-    "forge": "./forge.config.js"
-  },
+  "private": true,
+  "keywords": [
+    "electron",
+    "electron-forge",
+    "react",
+    "webpack"
+  ],
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0",
     "react": "^16.7.0-alpha.2",
     "react-dom": "^16.7.0-alpha.2"
   },
@@ -31,14 +34,57 @@
     "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
     "@electron-forge/cli": "^6.0.0-beta.22",
-    "@electron-forge/maker-deb": "^6.0.0-beta.22",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.22",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.22",
     "@electron-forge/maker-zip": "^6.0.0-beta.22",
     "@electron-forge/plugin-webpack": "^6.0.0-beta.22",
+    "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",
     "babel-plugin-dynamic-import-node": "^2.2.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.20",
-    "electron": "3.0.10"
+    "cz-conventional-changelog": "^2.1.0",
+    "electron": "3.0.10",
+    "eslint": "^5.9.0",
+    "eslint-config-react-app": "^3.0.5",
+    "eslint-plugin-flowtype": "^3.2.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
+    "husky": "^1.2.0",
+    "lint-staged": "^8.1.0",
+    "prettier": "^1.15.2"
+  },
+  "config": {
+    "forge": "./forge.config.js",
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "concurrent": false,
+    "linters": {
+      "*.js": [
+        "eslint --fix",
+        "git add"
+      ],
+      "*.{js,json,css,md,html,yml}": [
+        "prettier --write",
+        "git add"
+      ]
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "proseWrap": "always"
   }
 }
