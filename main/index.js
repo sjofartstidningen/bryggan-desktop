@@ -10,8 +10,10 @@ const { installDevTools } = require('./utils/dev-tools');
   await app.whenReady();
   app.dock.hide();
 
-  await installDevTools();
-  await prepareNext(path.join(__dirname, '../renderer'));
+  await Promise.all([
+    prepareNext(path.join(__dirname, '../renderer')),
+    installDevTools(),
+  ]);
 
   initializeTray();
 })();

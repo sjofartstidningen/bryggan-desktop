@@ -3,6 +3,7 @@
 const path = require('path');
 const { Tray } = require('electron');
 const { toggleFilePicker } = require('./file-picker');
+const { trayMenu } = require('./menus');
 
 let tray = null;
 
@@ -11,6 +12,7 @@ function initializeTray() {
   tray = new Tray(iconPath);
 
   tray.on('click', toggleFilePicker);
+  tray.on('right-click', () => tray.popUpContextMenu(trayMenu));
 }
 
 module.exports = { initializeTray };
