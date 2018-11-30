@@ -5,7 +5,8 @@
   "description": "My Electron application description",
   "main": "main/entry.js",
   "scripts": {
-    "start": "nodemon --watch main scripts/start.js",
+    "start": "electron .",
+    "watch": "nodemon --exec 'yarn start' --watch main",
     "build": "next build renderer && next export renderer",
     "dist": "yarn run build && build",
     "pack": "yarn run build && build --dir",
