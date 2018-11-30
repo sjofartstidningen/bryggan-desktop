@@ -5,7 +5,7 @@
   "description": "My Electron application description",
   "main": "main/entry.js",
   "scripts": {
-    "start": "electron .",
+    "start": "nodemon --watch main scripts/start.js",
     "build": "next build renderer && next export renderer",
     "dist": "yarn run build && build",
     "pack": "yarn run build && build --dir",
@@ -41,6 +41,7 @@
     "eslint-plugin-react": "^7.11.1",
     "husky": "^1.2.0",
     "lint-staged": "^8.1.0",
+    "nodemon": "^1.18.7",
     "prettier": "^1.15.2"
   },
   "config": {
