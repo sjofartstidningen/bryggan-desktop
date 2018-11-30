@@ -1,0 +1,19 @@
+{
+  "appId": "com.sjofartstidninen.bryggan.com",
+  "productName": "Bryggan",
+  "copyright": "Copyright © 2018 Sjöfartstidningen",
+  "files": ["main", "renderer/out", "static"],
+  "fileAssociations": [
+    {
+      "ext": "indd",
+      "role": "Viewer"
+    }
+  ],
+  "mac": {
+    "category": "public.app-category.productivity",
+    "minimumSystemVersion": "10.12.0",
+    "extendInfo": {
+      "NSRequiresAquaSystemAppearance": true
+    }
+  }
+}
