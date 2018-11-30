@@ -44,7 +44,6 @@
     "prettier": "^1.15.2"
   },
   "config": {
-    "forge": "./forge.config.js",
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
