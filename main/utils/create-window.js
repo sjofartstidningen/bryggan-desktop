@@ -8,7 +8,8 @@ const defaultWindowOptions = {
 };
 
 function createWindow(name, windowOptions) {
-  const events = [];
+  const onEvents = [];
+  const onceEvents = [];
 
   const getWindow = () => windows.get(name);
   const isCreated = () => windows.has(name);
@@ -24,8 +25,12 @@ function createWindow(name, windowOptions) {
 
     ipc.answerRenderer(`${name}-ready`, () => win.show());
 
-    events.forEach(([event, handler]) => win.on(event, handler));
+    onEvents.forEach(([event, handler]) => win.on(event, handler));
+    onceEvents.forEach(([event, handler]) => win.once(event, handler));
+
     win.on('closed', () => windows.delete(name));
+
+    return win;
   };
 
   const close = () => {
@@ -37,8 +42,11 @@ function createWindow(name, windowOptions) {
   };
 
   const show = () => {
-    if (isCreated()) getWindow().show();
-    else create();
+    return new Promise(resolve => {
+      if (isCreated()) getWindow().show();
+      else create();
+      once('show', resolve);
+    });
   };
 
   const toggleClosed = () => {
@@ -53,14 +61,22 @@ function createWindow(name, windowOptions) {
   };
 
   const off = (event, handler) => {
-    events.filter(evt => evt[0] !== event && evt[1] !== handler);
+    onEvents.filter(evt => evt[0] !== event && evt[1] !== handler);
     if (isCreated()) getWindow().off(event, handler);
   };
 
   const on = (event, handler) => {
-    events.push([event, handler]);
+    onEvents.push([event, handler]);
     if (isCreated()) getWindow().on(event, handler);
     return () => off(event, handler);
+  };
+
+  const once = (event, handler) => {
+    if (isCreated()) {
+      getWindow().once(event, handler);
+    } else {
+      onceEvents.push([event, handler]);
+    }
   };
 
   return {
@@ -75,6 +91,7 @@ function createWindow(name, windowOptions) {
     toggle,
     off,
     on,
+    once,
   };
 }
 

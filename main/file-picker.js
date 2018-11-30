@@ -1,4 +1,6 @@
+import { app } from 'electron';
 import { createWindow } from './utils/create-window';
+import { minutes } from './utils/time';
 
 const filePicker = createWindow('file-picker', {
   width: 300,
@@ -15,4 +17,16 @@ const filePicker = createWindow('file-picker', {
   webPreferences: { webSecurity: true },
 });
 
-export { filePicker };
+const initializeFilePicker = () => {
+  filePicker.create();
+  app.on('activate', () => filePicker.show());
+
+  let timeoutId = null;
+  filePicker.on('show', () => clearTimeout(timeoutId));
+  filePicker.on('hide', () => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(filePicker.close, minutes(15).toMilliseconds());
+  });
+};
+
+export { filePicker, initializeFilePicker };
