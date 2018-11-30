@@ -1,6 +1,4 @@
-'use strict';
-
-const { createWindow } = require('./utils/create-window');
+import { createWindow } from './utils/create-window';
 
 const filePicker = createWindow('file-picker', {
   width: 300,
@@ -17,4 +15,4 @@ const filePicker = createWindow('file-picker', {
   webPreferences: { webSecurity: true },
 });
 
-module.exports = { filePicker };
+export { filePicker };

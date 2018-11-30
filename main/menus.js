@@ -1,8 +1,6 @@
-'use strict';
-
-const { Menu } = require('electron');
-const { getIcon } = require('./utils/icons.js');
-const { productName, version } = require('../package.json');
+import { Menu } from 'electron';
+import { getIcon } from './utils/icons.js';
+import { productName, version } from '../package.json';
 
 const trayMenuTemplate = [
   {
@@ -27,4 +25,4 @@ const trayMenuTemplate = [
 
 const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
 
-module.exports = { trayMenu };
+export { trayMenu };

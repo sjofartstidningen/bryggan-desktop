@@ -1,8 +1,6 @@
-'use strict';
-
-const path = require('path');
-const fs = require('fs');
-const { nativeImage } = require('electron');
+import path from 'path';
+import fs from 'fs';
+import { nativeImage } from 'electron';
 
 const iconCache = new Map();
 const iconsRoot = path.join(__dirname, '../../static/icons');
@@ -23,4 +21,4 @@ const getIcon = name => {
   }
 };
 
-module.exports = { getIcon, iconCache };
+export { getIcon, iconCache };

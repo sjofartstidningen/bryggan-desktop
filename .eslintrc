@@ -7,8 +7,5 @@
     "jest": true,
     "node": true,
     "shared-node-browser": true
-  },
-  "rules": {
-    "strict": 0
   }
 }

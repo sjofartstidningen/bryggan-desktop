@@ -1,11 +1,9 @@
-'use strict';
-
-const { Tray } = require('electron');
-const { filePicker } = require('./file-picker');
-const { trayMenu } = require('./menus');
-const { getIcon } = require('./utils/icons.js');
-const { minutes } = require('./utils/time');
-const { productName, version } = require('../package.json');
+import { Tray } from 'electron';
+import { filePicker } from './file-picker';
+import { trayMenu } from './menus';
+import { getIcon } from './utils/icons.js';
+import { minutes } from './utils/time';
+import { productName, version } from '../package.json';
 
 let tray = null;
 
@@ -33,4 +31,4 @@ function initializeTray() {
   });
 }
 
-module.exports = { initializeTray };
+export { initializeTray };

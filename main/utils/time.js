@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * This might seem like magic. But put simply it will make it possible to write
  * like this:
@@ -37,12 +35,10 @@ const createConverter = multiplier => val => {
   }));
 };
 
-module.exports = {
-  days: createConverter(multipliers.days),
-  hours: createConverter(multipliers.hours),
-  minutes: createConverter(multipliers.minutes),
-  seconds: createConverter(multipliers.seconds),
-  milliseconds: createConverter(multipliers.milliseconds),
-  microseconds: createConverter(multipliers.microseconds),
-  nanoseconds: createConverter(multipliers.nanoseconds),
-};
+export const days = createConverter(multipliers.days);
+export const hours = createConverter(multipliers.hours);
+export const minutes = createConverter(multipliers.minutes);
+export const seconds = createConverter(multipliers.seconds);
+export const milliseconds = createConverter(multipliers.milliseconds);
+export const microseconds = createConverter(multipliers.microseconds);
+export const nanoseconds = createConverter(multipliers.nanoseconds);

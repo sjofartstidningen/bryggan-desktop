@@ -1,9 +1,7 @@
-'use strict';
-
-const { BrowserWindow } = require('electron');
-const ipc = require('electron-better-ipc');
-const { windows } = require('./cache');
-const { loadRoute } = require('./routes');
+import { BrowserWindow } from 'electron';
+import ipc from 'electron-better-ipc';
+import { windows } from './cache';
+import { loadRoute } from './routes';
 
 const defaultWindowOptions = {
   show: false,
@@ -80,4 +78,4 @@ function createWindow(name, windowOptions) {
   };
 }
 
-module.exports = { createWindow };
+export { createWindow };

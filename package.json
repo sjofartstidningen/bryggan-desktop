@@ -3,7 +3,7 @@
   "productName": "Bryggan",
   "version": "1.0.0",
   "description": "My Electron application description",
-  "main": "main/index.js",
+  "main": "main/entry.js",
   "scripts": {
     "start": "electron .",
     "build": "next build renderer && next export renderer",
@@ -23,6 +23,7 @@
     "electron-devtools-installer": "^2.2.4",
     "electron-next": "^3.1.5",
     "electron-util": "^0.10.2",
+    "esm": "^3.0.84",
     "next": "^7.0.2",
     "react": "^16.7.0-alpha.2",
     "react-dom": "^16.7.0-alpha.2"

@@ -1,10 +1,7 @@
-'use strict';
-
-const {
-  default: installExtension,
+import installExtension, {
   REACT_DEVELOPER_TOOLS,
-} = require('electron-devtools-installer');
-const { is } = require('electron-util');
+} from 'electron-devtools-installer';
+import { is } from 'electron-util';
 
 async function installDevTools() {
   if (!is.development) return;
@@ -17,4 +14,4 @@ async function installDevTools() {
   }
 }
 
-module.exports = { installDevTools };
+export { installDevTools };

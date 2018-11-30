@@ -1,7 +1,5 @@
-'use strict';
-
-const { app } = require('electron');
-const { is } = require('electron-util');
+import { app } from 'electron';
+import { is } from 'electron-util';
 
 const loadRoute = (win, routeName) => {
   if (is.development) {
@@ -12,4 +10,4 @@ const loadRoute = (win, routeName) => {
   }
 };
 
-module.exports = { loadRoute };
+export { loadRoute };

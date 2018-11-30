@@ -1,10 +1,8 @@
-'use strict';
-
-const path = require('path');
-const { app } = require('electron');
-const prepareNext = require('electron-next');
-const { initializeTray } = require('./tray');
-const { installDevTools } = require('./utils/dev-tools');
+import path from 'path';
+import { app } from 'electron';
+import prepareNext from 'electron-next';
+import { initializeTray } from './tray';
+import { installDevTools } from './utils/dev-tools';
 
 (async () => {
   await app.whenReady();
