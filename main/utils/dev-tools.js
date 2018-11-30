@@ -1,3 +1,5 @@
+'use strict';
+
 const {
   default: installExtension,
   REACT_DEVELOPER_TOOLS,
