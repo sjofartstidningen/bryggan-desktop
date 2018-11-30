@@ -10,8 +10,11 @@ const defaultWindowOptions = {
 };
 
 function createWindow(name, windowOptions) {
-  const isCreated = () => windows.has(name);
+  const events = [];
+
   const getWindow = () => windows.get(name);
+  const isCreated = () => windows.has(name);
+  const isVisible = () => isCreated() && getWindow().isVisible();
 
   const create = () => {
     const win = new BrowserWindow(
@@ -22,61 +25,58 @@ function createWindow(name, windowOptions) {
     loadRoute(win, name);
 
     ipc.answerRenderer(`${name}-ready`, () => win.show());
+
+    events.forEach(([event, handler]) => win.on(event, handler));
+    win.on('closed', () => windows.delete(name));
   };
 
   const close = () => {
-    if (isCreated()) {
-      const win = getWindow();
-      win.destroy();
-      windows.delete(name);
-    }
+    if (isCreated()) getWindow().destroy();
   };
 
   const hide = () => {
-    if (isCreated()) {
-      const win = getWindow();
-      win.hide();
-    }
+    if (isCreated()) getWindow().hide();
   };
 
   const show = () => {
-    if (isCreated()) {
-      const win = getWindow();
-      win.show();
-    }
+    if (isCreated()) getWindow().show();
+    else create();
+  };
+
+  const toggleClosed = () => {
+    if (isCreated()) close();
+    else create();
   };
 
   const toggle = () => {
-    if (isCreated()) {
-      close();
-    } else {
-      create();
-    }
+    if (isCreated() && isVisible()) hide();
+    else if (isCreated()) show();
+    else create();
   };
 
-  const toggleHidden = () => {
-    if (!isCreated()) {
-      create();
-    } else {
-      const win = getWindow();
+  const off = (event, handler) => {
+    events.filter(evt => evt[0] !== event && evt[1] !== handler);
+    if (isCreated()) getWindow().off(event, handler);
+  };
 
-      if (win.isVisible()) {
-        hide();
-      } else {
-        show();
-      }
-    }
+  const on = (event, handler) => {
+    events.push([event, handler]);
+    if (isCreated()) getWindow().on(event, handler);
+    return () => off(event, handler);
   };
 
   return {
-    isCreated,
     getWindow,
+    isCreated,
+    isVisible,
     create,
     close,
     hide,
     show,
+    toggleClosed,
     toggle,
-    toggleHidden,
+    off,
+    on,
   };
 }
 
