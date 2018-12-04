@@ -1,32 +1,43 @@
-import { app } from 'electron';
-import { createWindow } from './utils/create-window';
-import { minutes } from './utils/time';
+import { BrowserWindow } from 'electron';
+import ipc from 'electron-better-ipc';
+import { windows } from './utils/cache';
+import { loadRoute } from './utils/routes';
+import { ifWindow } from './utils/window';
 
-const filePicker = createWindow('file-picker', {
-  width: 300,
-  height: 350,
-  title: 'File Picker',
-  frame: false,
-  moveable: false,
-  resizable: false,
-  maximizable: false,
-  minimizable: false,
-  fullscreenable: false,
-  center: true,
-  show: false,
-  webPreferences: { webSecurity: true },
-});
+const name = 'file-picker';
 
-const initializeFilePicker = () => {
-  filePicker.create();
-  app.on('activate', () => filePicker.show());
-
-  let timeoutId = null;
-  filePicker.on('show', () => clearTimeout(timeoutId));
-  filePicker.on('hide', () => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(filePicker.close, minutes(15).toMilliseconds());
+const initialize = () => {
+  const win = new BrowserWindow({
+    width: 300,
+    height: 350,
+    title: 'File Picker',
+    frame: false,
+    titleBarStyle: 'hiddenInset',
+    moveable: false,
+    resizable: false,
+    maximizable: false,
+    minimizable: false,
+    fullscreenable: false,
+    center: true,
+    show: false,
+    webPreferences: { webSecurity: true },
   });
+
+  windows.set(name, win);
+  loadRoute(win, name);
+
+  win.on('close', () => windows.delete(name));
+  return new Promise(resolve => ipc.answerRenderer(`${name}-ready`, resolve));
 };
 
-export { filePicker, initializeFilePicker };
+const show = ifWindow(name, () => {
+  const win = windows.get(name);
+  win.show();
+});
+
+const hide = ifWindow(name, () => {
+  const win = windows.get(name);
+  win.hide();
+});
+
+export { initialize, show, hide };
