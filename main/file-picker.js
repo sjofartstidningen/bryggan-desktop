@@ -1,12 +1,13 @@
 import { BrowserWindow } from 'electron';
-import ipc from 'electron-better-ipc';
+import { is } from 'electron-util';
 import { windows } from './utils/cache';
 import { loadRoute } from './utils/routes';
 import { ifWindow } from './utils/window';
+import { events } from '../shared/events';
 
 const name = 'file-picker';
 
-const initialize = () => {
+const initialize = async () => {
   const win = new BrowserWindow({
     width: 300,
     height: 350,
@@ -24,10 +25,10 @@ const initialize = () => {
   });
 
   windows.set(name, win);
-  loadRoute(win, name);
+  loadRoute(win, name, is.development);
 
   win.on('close', () => windows.delete(name));
-  return new Promise(resolve => ipc.answerRenderer(`${name}-ready`, resolve));
+  await events.waitFor(`${name}-ready`);
 };
 
 const show = ifWindow(name, () => {

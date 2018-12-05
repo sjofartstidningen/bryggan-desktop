@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
+import { events } from '../../shared/events';
 
 const useReady = pageName => {
-  useEffect(() => {
-    const ipc = require('electron-better-ipc');
-    ipc.callMain(`${pageName}-ready`);
-  }, []);
+  useEffect(() => events.emit(`${pageName}-ready`), []);
 };
 
 export { useReady };
