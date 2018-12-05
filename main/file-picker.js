@@ -9,19 +9,22 @@ const name = 'file-picker';
 
 const initialize = async () => {
   const win = new BrowserWindow({
+    show: false,
     width: 300,
     height: 350,
-    title: 'File Picker',
-    frame: false,
-    titleBarStyle: 'hiddenInset',
-    moveable: false,
-    resizable: false,
-    maximizable: false,
-    minimizable: false,
-    fullscreenable: false,
     center: true,
-    show: false,
-    webPreferences: { webSecurity: true },
+    title: 'Bryggan',
+    titleBarStyle: 'hiddenInset',
+    frame: false,
+    resizable: false,
+    movable: true,
+    minimizable: true,
+    maximizable: false,
+    fullscreenable: false,
+    webPreferences: {
+      webSecurity: true,
+      devTools: is.development,
+    },
   });
 
   windows.set(name, win);
