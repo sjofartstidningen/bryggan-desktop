@@ -1,84 +1,23 @@
 import React from 'react';
-import NextDocument, { Head, Main, NextScript } from 'next/document';
+import NextDocument from 'next/document';
+import { ServerStyleSheet } from 'styled-components';
 
 class Document extends NextDocument {
   static async getInitialProps(ctx) {
-    return NextDocument.getInitialProps(ctx);
-  }
+    const sheet = new ServerStyleSheet();
 
-  render() {
-    return (
-      <html>
-        <Head>
-          <style>{`
-            /* http://meyerweb.com/eric/tools/css/reset/ 
-              v2.0 | 20110126
-              License: none (public domain)
-            */
+    const originalRenderPage = ctx.renderPage;
+    ctx.renderPage = () =>
+      originalRenderPage({
+        enhanceApp: App => props => sheet.collectStyles(<App {...props} />),
+      });
 
-            html, body, div, span, applet, object, iframe,
-            h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-            a, abbr, acronym, address, big, cite, code,
-            del, dfn, em, img, ins, kbd, q, s, samp,
-            small, strike, strong, sub, sup, tt, var,
-            b, u, i, center,
-            dl, dt, dd, ol, ul, li,
-            fieldset, form, label, legend,
-            table, caption, tbody, tfoot, thead, tr, th, td,
-            article, aside, canvas, details, embed, 
-            figure, figcaption, footer, header, hgroup, 
-            menu, nav, output, ruby, section, summary,
-            time, mark, audio, video {
-              margin: 0;
-              padding: 0;
-              border: 0;
-              font-size: 100%;
-              font: inherit;
-              vertical-align: baseline;
-            }
-            /* HTML5 display-role reset for older browsers */
-            article, aside, details, figcaption, figure, 
-            footer, header, hgroup, menu, nav, section {
-              display: block;
-            }
-            body {
-              line-height: 1;
-            }
-            ol, ul {
-              list-style: none;
-            }
-            blockquote, q {
-              quotes: none;
-            }
-            blockquote:before, blockquote:after,
-            q:before, q:after {
-              content: '';
-              content: none;
-            }
-            table {
-              border-collapse: collapse;
-              border-spacing: 0;
-            }
-            
-            :root {
-              --electron-safe-inset: 36px;
-            }
+    const initialProps = await NextDocument.getInitialProps(ctx);
 
-            *, *::before, *::after {
-              box-sizing: border-box;
-            }
-
-            body {
-              margin-top: var(--electron-safe-inset);
-            }
-          `}</style>
-        </Head>
-        <body>
-          <Main />
-          <NextScript />
-        </body>
-      </html>
-    );
+    return {
+      ...initialProps,
+      styles: [...initialProps.styles, ...sheet.getStyleElement()],
+    };
   }
 }
 

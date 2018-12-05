@@ -1,23 +1,30 @@
-import React, { StrictMode } from 'react';
+import React, { StrictMode, Fragment } from 'react';
 import NextApp, { Container } from 'next/app';
+import { ThemeProvider } from 'styled-components';
+import { GlobalStyle } from '../components/GlobalStyle';
 
 class App extends NextApp {
   static async getInitialProps({ Component, ctx }) {
-    let initialProps = {};
+    let pageProps = {};
 
     if (Component.getInitialProps) {
-      initialProps = await Component.getInitialProps(ctx);
+      pageProps = await Component.getInitialProps(ctx);
     }
 
-    return { initialProps };
+    return { pageProps };
   }
 
   render() {
-    const { Component, initialProps } = this.props;
+    const { Component, pageProps } = this.props;
     return (
       <StrictMode>
         <Container>
-          <Component {...initialProps} />
+          <ThemeProvider theme={{}}>
+            <Fragment>
+              <GlobalStyle />
+              <Component {...pageProps} />
+            </Fragment>
+          </ThemeProvider>
         </Container>
       </StrictMode>
     );
