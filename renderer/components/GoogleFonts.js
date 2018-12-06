@@ -3,7 +3,13 @@ import React from 'react';
 function GoogleFonts({ fonts }) {
   const fontsFragment = fonts
     .map(font => {
-      let name = font.name.replace(/\s/g, '+');
+      let name;
+      if (typeof font === 'string') {
+        name = font.replace(/\s/g, '+');
+      } else {
+        name = font.name.replace(/\s/g, '+');
+      }
+
       if (font.weights) {
         name += `:${font.weights.join(',')}`;
       }
