@@ -13,7 +13,7 @@ class App extends NextApp {
       pageProps = await Component.getInitialProps(ctx);
     }
 
-    const fonts = [{ name: 'IBM Plex Sans', weights: [400] }];
+    const fonts = [{ name: 'IBM Plex Sans', weights: [400, 600] }];
 
     return { pageProps, fonts };
   }
