@@ -1,7 +1,9 @@
 import React, { StrictMode, Fragment } from 'react';
 import NextApp, { Container } from 'next/app';
+import Head from 'next/head';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '../components/GlobalStyle';
+import { GoogleFonts } from '../components/GoogleFonts';
 
 class App extends NextApp {
   static async getInitialProps({ Component, ctx }) {
@@ -11,16 +13,21 @@ class App extends NextApp {
       pageProps = await Component.getInitialProps(ctx);
     }
 
-    return { pageProps };
+    const fonts = [{ name: 'IBM Plex Sans', weights: [400] }];
+
+    return { pageProps, fonts };
   }
 
   render() {
-    const { Component, pageProps } = this.props;
+    const { Component, pageProps, fonts } = this.props;
     return (
       <StrictMode>
         <Container>
           <ThemeProvider theme={{}}>
             <Fragment>
+              <Head>
+                <GoogleFonts fonts={fonts} />
+              </Head>
               <GlobalStyle />
               <Component {...pageProps} />
             </Fragment>
