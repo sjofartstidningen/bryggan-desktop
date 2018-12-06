@@ -2,7 +2,6 @@ import { BrowserWindow } from 'electron';
 import { is } from 'electron-util';
 import { windows } from './utils/cache';
 import { loadRoute } from './utils/routes';
-import { ifWindow } from './utils/window';
 import { events } from '../shared/events';
 
 const name = 'file-picker';
@@ -32,16 +31,25 @@ const initialize = async () => {
 
   win.on('close', () => windows.delete(name));
   await events.waitFor(`${name}-ready`);
+
+  return win;
 };
 
-const show = ifWindow(name, () => {
-  const win = windows.get(name);
-  win.show();
-});
+const show = async () => {
+  if (windows.has(name)) {
+    const win = windows.get(name);
+    win.show();
+  } else {
+    const win = await initialize();
+    win.show();
+  }
+};
 
-const hide = ifWindow(name, () => {
-  const win = windows.get(name);
-  win.hide();
-});
+const hide = () => {
+  if (windows.has(name)) {
+    const win = windows.get(name);
+    win.hide();
+  }
+};
 
 export { initialize, show, hide };

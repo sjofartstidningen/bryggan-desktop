@@ -13,7 +13,9 @@ import * as filePicker from './file-picker';
   ]);
 
   await filePicker.initialize();
-  filePicker.show();
+  await filePicker.show();
+
+  app.on('activate', () => filePicker.show());
 })();
 
 app.on('window-all-closed', event => event.preventDefault());
