@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { useReady } from '../hooks';
 import { Header } from '../components/Header';
 import { Breadcrumbs } from '../components/Breadcrumbs';
+import { FolderList } from '../components/FolderList';
+import { EmptyFolder } from '../components/EmptyFolder';
+import { Folder, File, IdFile } from '../components/Icon';
 
 const create = (type, name) => ({
-  '.tag': type,
+  type: type,
   name,
-  path: `/tidningen/2018/11/${name.toLowerCase()}`,
+  path: `/Tidningen/2018/11/${name}`,
 });
 
 const folderContent = [
@@ -27,6 +30,12 @@ function FilePicker() {
   const [currentPath, setCurrentPath] = useState('/Tidningen/2018/11');
   useReady('file-picker');
 
+  const handleClick = item => {
+    if (item.type === 'folder') {
+      setCurrentPath(item.path);
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -40,15 +49,20 @@ function FilePicker() {
       </section>
 
       <main>
-        <ul>
-          {folderContent.map(({ '.tag': type, name }) => (
-            <li key={name}>
-              <button>
-                <span>{type}</span> {name}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <FolderList
+          items={folderContent}
+          onItemClick={handleClick}
+          renderIcon={({ type, name }) =>
+            name.endsWith('.indd') ? (
+              <IdFile />
+            ) : type === 'folder' ? (
+              <Folder />
+            ) : (
+              <File />
+            )
+          }
+          renderEmpty={() => <EmptyFolder />}
+        />
       </main>
     </div>
   );
