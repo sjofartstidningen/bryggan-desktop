@@ -5,6 +5,7 @@
   "description": "My Electron application description",
   "main": "main/entry.js",
   "scripts": {
+    "test": "jest --env=jsdom",
     "start": "electron .",
     "watch": "nodemon --exec 'yarn start' --watch main --watch shared",
     "build": "next build renderer && next export renderer",
@@ -33,7 +34,9 @@
     "styled-components": "^4.1.2"
   },
   "devDependencies": {
+    "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
+    "babel-jest": "^23.6.0",
     "cz-conventional-changelog": "^2.1.0",
     "electron": "3.0.10",
     "electron-builder": "^20.38.1",
@@ -44,9 +47,12 @@
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-react": "^7.11.1",
     "husky": "^1.2.0",
+    "jest": "^23.6.0",
+    "jest-dom": "^3.0.0",
     "lint-staged": "^8.1.0",
     "nodemon": "^1.18.7",
-    "prettier": "^1.15.2"
+    "prettier": "^1.15.2",
+    "react-testing-library": "^5.3.1"
   },
   "config": {
     "commitizen": {
