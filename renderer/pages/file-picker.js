@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useReady } from '../hooks';
 import { Header } from '../components/Header';
+import { Breadcrumbs } from '../components/Breadcrumbs';
 
 const create = (type, name) => ({
   '.tag': type,
@@ -23,6 +24,7 @@ const folderContent = [
 ];
 
 function FilePicker() {
+  const [currentPath, setCurrentPath] = useState('/Tidningen/2018/11');
   useReady('file-picker');
 
   return (
@@ -30,20 +32,10 @@ function FilePicker() {
       <Header />
       <section>
         <nav>
-          <ul>
-            <li>
-              <a href="/">Root</a>
-            </li>
-            <li>
-              <a href="/Tidningen">Tidningen</a>
-            </li>
-            <li>
-              <a href="/Tidningen/2018">2018</a>
-            </li>
-            <li>
-              <a href="/Tidningen/2018/11">11</a>
-            </li>
-          </ul>
+          <Breadcrumbs
+            currentPath={currentPath}
+            onPathClick={({ path }) => setCurrentPath(path)}
+          />
         </nav>
       </section>
 
