@@ -1,4 +1,4 @@
-import React, { StrictMode, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import NextApp, { Container } from 'next/app';
 import Head from 'next/head';
 import { ThemeProvider } from 'styled-components';
@@ -21,19 +21,17 @@ class App extends NextApp {
   render() {
     const { Component, pageProps, fonts } = this.props;
     return (
-      <StrictMode>
-        <Container>
-          <ThemeProvider theme={{}}>
-            <Fragment>
-              <Head>
-                <GoogleFonts fonts={fonts} />
-              </Head>
-              <GlobalStyle />
-              <Component {...pageProps} />
-            </Fragment>
-          </ThemeProvider>
-        </Container>
-      </StrictMode>
+      <Container>
+        <ThemeProvider theme={{}}>
+          <Fragment>
+            <Head>
+              <GoogleFonts fonts={fonts} />
+            </Head>
+            <GlobalStyle />
+            <Component {...pageProps} />
+          </Fragment>
+        </ThemeProvider>
+      </Container>
     );
   }
 }
