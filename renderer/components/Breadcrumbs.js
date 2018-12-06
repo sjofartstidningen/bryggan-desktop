@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { join } from 'path';
 import styled, { css } from 'styled-components';
+import { hideVisually } from 'polished';
 import { Home } from './Icon';
 
 const last = arr => arr[arr.length - 1];
@@ -55,6 +56,10 @@ const BreadcrumbButton = styled.button`
     `}
 `;
 
+const Hidden = styled.span`
+  ${hideVisually()};
+`;
+
 function Breadcrumbs({ currentPath, onPathClick }) {
   const fragments = currentPath
     .split(/\//g)
@@ -80,7 +85,14 @@ function Breadcrumbs({ currentPath, onPathClick }) {
             active={frag.path === currentPath}
             onClick={() => onPathClick(frag)}
           >
-            {frag.path === '/' ? <Home /> : frag.name}
+            {frag.path === '/' ? (
+              <Fragment>
+                <Home />
+                <Hidden>{frag.name}</Hidden>
+              </Fragment>
+            ) : (
+              frag.name
+            )}
           </BreadcrumbButton>
         </BreadcrumbItem>
       ))}
