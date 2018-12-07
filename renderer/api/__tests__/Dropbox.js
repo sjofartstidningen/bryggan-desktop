@@ -42,13 +42,14 @@ describe('Api: Dropbox.listFolder', () => {
 
     const promise = Dropbox.listFolder('/path', {
       apiKey: 'foo',
-      token: controller.token,
+      cancelToken: controller.token,
     });
 
     controller.cancel('Aborted');
 
     try {
       await promise;
+      throw new Error('If reached something is wrong');
     } catch (err) {
       expect(err.message).toMatch(/Aborted/);
     }

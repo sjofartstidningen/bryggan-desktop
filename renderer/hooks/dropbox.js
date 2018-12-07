@@ -17,7 +17,10 @@ function useListFolder({ initialPath = '/', apiKey } = {}) {
 
         const controller = CancelToken.source();
 
-        Dropbox.listFolder(currentPath, { apiKey, token: controller.token })
+        Dropbox.listFolder(currentPath, {
+          apiKey,
+          cancelToken: controller.token,
+        })
           .then(({ items }) => {
             setItems(items);
             setError(null);

@@ -29,7 +29,7 @@ const normalizeFolderContent = entries =>
     })
     .filter(Boolean);
 
-async function listFolder(path, { apiKey, token } = {}) {
+async function listFolder(path, { apiKey, cancelToken } = {}) {
   if (typeof apiKey !== 'string') {
     throw new Error('An api key is required to request folder contents');
   }
@@ -42,7 +42,7 @@ async function listFolder(path, { apiKey, token } = {}) {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    cancelToken: token,
+    cancelToken,
   });
 
   return { items: normalizeFolderContent(response.data.entries) };
