@@ -1,6 +1,6 @@
+import { CancelToken, __setResponseData } from 'axios';
 import * as Dropbox from '../Dropbox';
 import { filesListFolder } from '../../__fixtures__/Dropbox';
-import { __setResponseData } from 'axios';
 
 jest.mock('axios');
 __setResponseData({ data: filesListFolder });
@@ -38,7 +38,6 @@ describe('Api: Dropbox.listFolder', () => {
   });
 
   it('should be cancellable', async () => {
-    const { CancelToken } = jest.requireActual('axios');
     const controller = CancelToken.source();
 
     const promise = Dropbox.listFolder('/path', {
