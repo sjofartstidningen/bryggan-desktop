@@ -2,18 +2,18 @@
 
 exports[`Component: <Header /> should render without issues 1`] = `
 <header
-  class="sc-bwzfXH JcEbt"
+  class="Header__Container-sc-1mkczw2-0 dyWXCj"
 >
   <h1
-    class="sc-htpNat gCyUDO"
+    class="Header__Title-sc-1mkczw2-1 btlYkC"
   >
     Bryggan
   </h1>
   <div
-    class="sc-bxivhb daQcPi"
+    class="Header__LogotypeWrapper-sc-1mkczw2-2 eBEqzt"
   >
     <svg
-      class="sc-bdVaJa krywSY"
+      class="Logotype__Svg-ybkwmg-0 kwFPFj"
       viewBox="0 0 11.78 14"
       xmlns="http://www.w3.org/2000/svg"
     >

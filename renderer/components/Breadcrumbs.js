@@ -12,7 +12,9 @@ const Wrapper = styled.ul`
   justify-content: flex-start;
   list-style: none;
   width: 100%;
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    sans-serif;
   font-size: 0.75rem;
   color: rgb(68, 68, 68);
   background-color: rgb(250, 251, 252);
@@ -33,7 +35,9 @@ const BreadcrumbButton = styled.button`
   margin: 0;
   border: none;
   padding: 0 0.25rem;
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    sans-serif;
   font-size: 0.75rem;
   font-weight: 400;
   color: rgb(68, 68, 68);

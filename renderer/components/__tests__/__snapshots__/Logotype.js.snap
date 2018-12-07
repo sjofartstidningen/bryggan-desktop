@@ -2,7 +2,7 @@
 
 exports[`Component: <Logotype /> should render without issues 1`] = `
 <svg
-  class="sc-bdVaJa krywSY"
+  class="Logotype__Svg-ybkwmg-0 kwFPFj"
   viewBox="0 0 11.78 14"
   xmlns="http://www.w3.org/2000/svg"
 >

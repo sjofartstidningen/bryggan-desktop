@@ -10,7 +10,9 @@ const Container = styled.header`
   align-items: center;
   margin-top: calc(var(--electron-safe-inset, 0px) * -1);
   padding: calc(var(--electron-safe-inset, 1rem) / 2) 0;
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    sans-serif;
   font-size: 0.75rem;
   user-select: none;
   app-region: drag;
