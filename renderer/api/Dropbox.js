@@ -1,4 +1,4 @@
-import { fetch } from '../utils/fetch';
+import axios from 'axios';
 
 const normalizeFolderContent = entries =>
   entries
@@ -29,36 +29,23 @@ const normalizeFolderContent = entries =>
     })
     .filter(Boolean);
 
-async function listFolder(path, { apiKey, signal } = {}) {
+async function listFolder(path, { apiKey, token } = {}) {
   if (typeof apiKey !== 'string') {
     throw new Error('An api key is required to request folder contents');
   }
 
-  const url = 'https://api.dropboxapi.com/2/files/list_folder';
-  const headers = {
-    Authorization: `Bearer: ${apiKey}`,
-    'Content-Type': 'application/json',
-  };
-
-  const body = {
-    path,
-    recursive: false,
-  };
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-    signal,
+  const response = await axios({
+    url: 'https://api.dropboxapi.com/2/files/list_folder',
+    method: 'post',
+    data: { path: path === '/' ? '' : path },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    cancelToken: token,
   });
 
-  if (!response.ok) {
-    throw new Error(`Could not fetch folder contents at ${path}`);
-  }
-
-  const json = await response.json();
-
-  return { items: normalizeFolderContent(json.entries) };
+  return { items: normalizeFolderContent(response.data.entries) };
 }
 
 export { listFolder };

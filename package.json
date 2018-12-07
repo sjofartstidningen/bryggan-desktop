@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "abort-controller": "^1.0.2",
+    "axios": "^0.18.0",
+    "dotenv": "^6.2.0",
     "electron-better-ipc": "^0.1.1",
     "electron-devtools-installer": "^2.2.4",
     "electron-next": "^3.1.5",

@@ -1,9 +1,9 @@
-import { AbortController, __setResponse } from '../../utils/fetch';
 import * as Dropbox from '../Dropbox';
 import { filesListFolder } from '../../__fixtures__/Dropbox';
+import { __setResponseData } from 'axios';
 
-jest.mock('../../utils/fetch.js');
-__setResponse(filesListFolder);
+jest.mock('axios');
+__setResponseData({ data: filesListFolder });
 
 describe('Api: Dropbox.listFolder', () => {
   it('should throw if apiKey is not provided', async () => {
@@ -38,14 +38,20 @@ describe('Api: Dropbox.listFolder', () => {
   });
 
   it('should be cancellable', async () => {
-    const controller = new AbortController();
+    const { CancelToken } = jest.requireActual('axios');
+    const controller = CancelToken.source();
+
     const promise = Dropbox.listFolder('/path', {
       apiKey: 'foo',
-      signal: controller.signal,
+      token: controller.token,
     });
 
-    controller.abort();
+    controller.cancel('Aborted');
 
-    await expect(promise).rejects.toThrow(/aborted/i);
+    try {
+      await promise;
+    } catch (err) {
+      expect(err.message).toMatch(/Aborted/);
+    }
   });
 });
