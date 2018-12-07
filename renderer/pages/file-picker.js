@@ -1,40 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useReady } from '../hooks';
 import { Header } from '../components/Header';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FolderList } from '../components/FolderList';
 import { EmptyFolder } from '../components/EmptyFolder';
 import { Folder, File, IdFile } from '../components/Icon';
-
-const create = (type, name) => ({
-  type: type,
-  name,
-  path: `/Tidningen/2018/11/${name}`,
-});
-
-const folderContent = [
-  create('folder', 'A'),
-  create('folder', 'B'),
-  create('folder', 'C'),
-  create('folder', 'D'),
-  create('folder', 'Framvagn'),
-  create('folder', 'till tryckeriet'),
-  create('file', 'ST_11_18_01_Framvagn.indd'),
-  create('file', 'ST_11_18_02_A.indd'),
-  create('file', 'ST_11_18_03_B.indd'),
-  create('file', 'ST_11_18_04_C.indd'),
-  create('file', 'ST_11_18_05_D.indd'),
-];
+import { useListFolder } from '../hooks/dropbox';
 
 function FilePicker() {
-  const [currentPath, setCurrentPath] = useState('/Tidningen/2018/11');
-  useReady('file-picker');
+  const { state, items, currentPath, error, goToPath } = useListFolder({
+    initialPath: '/',
+    apiKey: process.env.DROPBOX_API_KEY,
+  });
 
-  const handleClick = item => {
-    if (item.type === 'folder') {
-      setCurrentPath(item.path);
-    }
-  };
+  useReady('file-picker');
 
   return (
     <div>
@@ -43,26 +22,31 @@ function FilePicker() {
         <nav>
           <Breadcrumbs
             currentPath={currentPath}
-            onPathClick={({ path }) => setCurrentPath(path)}
+            onPathClick={({ path }) => goToPath(path)}
           />
         </nav>
       </section>
 
       <main>
-        <FolderList
-          items={folderContent}
-          onItemClick={handleClick}
-          renderIcon={({ type, name }) =>
-            name.endsWith('.indd') ? (
-              <IdFile />
-            ) : type === 'folder' ? (
-              <Folder />
-            ) : (
-              <File />
-            )
-          }
-          renderEmpty={() => <EmptyFolder />}
-        />
+        {state === 'initial' && <p>Loading</p>}
+        {state === 'fetching' && <p>Loading</p>}
+        {state === 'error' && <p>{error.message}</p>}
+        {state === 'success' && (
+          <FolderList
+            items={items}
+            onItemClick={({ path }) => goToPath(path)}
+            renderIcon={({ type, name }) =>
+              name.endsWith('.indd') ? (
+                <IdFile />
+              ) : type === 'folder' ? (
+                <Folder />
+              ) : (
+                <File />
+              )
+            }
+            renderEmpty={() => <EmptyFolder />}
+          />
+        )}
       </main>
     </div>
   );
