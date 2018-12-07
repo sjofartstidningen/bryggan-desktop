@@ -1,11 +1,9 @@
 import React from 'react';
 import { render, flushEffects } from 'react-testing-library';
 import { useReady } from '../';
-import { events } from '../../../shared/events';
+import ipc from 'electron-better-ipc';
 
-jest.mock('electron-better-ipc', () => ({}));
-
-jest.mock('electron-util', () => ({ is: { main: false, renderer: false } }));
+jest.mock('electron-better-ipc');
 
 const Wrapper = () => {
   useReady('comp');
@@ -13,11 +11,8 @@ const Wrapper = () => {
 };
 
 it('hooks.useReady', async () => {
-  const onReady = jest.fn();
-  events.on('comp-ready', onReady);
   render(<Wrapper />);
-
   await flushEffects();
-
-  expect(onReady).toHaveBeenCalled();
+  expect(ipc.callMain).toHaveBeenCalled();
+  expect(ipc.callMain).toHaveBeenCalledWith('comp-ready');
 });

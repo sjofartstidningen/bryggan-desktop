@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron';
 import { is } from 'electron-util';
 import { windows } from './utils/cache';
 import { loadRoute } from './utils/routes';
-import { events } from '../shared/events';
+import { waitForRenderer } from './utils/ipc';
 
 const name = 'file-picker';
 
@@ -29,9 +29,7 @@ const initialize = async () => {
   windows.set(name, win);
   loadRoute(win, name, is.development);
 
-  win.on('close', () => windows.delete(name));
-  await events.waitFor(`${name}-ready`);
-
+  await waitForRenderer(`${name}-ready`);
   return win;
 };
 
