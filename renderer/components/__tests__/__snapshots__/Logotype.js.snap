@@ -1,8 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Component: <Logotype /> should render without issues 1`] = `
+.c0 {
+  width: 100%;
+  height: auto;
+  fill: #000;
+}
+
+.c0 .fill-none {
+  fill: none;
+}
+
 <svg
-  class="Logotype__Svg-ybkwmg-0 kwFPFj"
+  class="c0"
   viewBox="0 0 11.78 14"
   xmlns="http://www.w3.org/2000/svg"
 >

@@ -1,19 +1,77 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Component: <Header /> should render without issues 1`] = `
+.c3 {
+  width: 100%;
+  height: auto;
+  fill: #000;
+}
+
+.c3 .fill-none {
+  fill: none;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+  -ms-flex-flow: column nowrap;
+  flex-flow: column nowrap;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin-top: calc(var(--electron-safe-inset,0px) * -1);
+  padding: calc(var(--electron-safe-inset,1rem) / 2) 0;
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol',sans-serif;
+  font-size: 0.75rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-app-region: drag;
+  -moz-app-region: drag;
+  app-region: drag;
+}
+
+.c1 {
+  border: 0;
+  -webkit-clip: rect(0 0 0 0);
+  clip: rect(0 0 0 0);
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.c2 {
+  width: 15%;
+}
+
 <header
-  class="Header__Container-sc-1mkczw2-0 dyWXCj"
+  class="c0"
 >
   <h1
-    class="Header__Title-sc-1mkczw2-1 btlYkC"
+    class="c1"
   >
     Bryggan
   </h1>
   <div
-    class="Header__LogotypeWrapper-sc-1mkczw2-2 eBEqzt"
+    class="c2"
   >
     <svg
-      class="Logotype__Svg-ybkwmg-0 kwFPFj"
+      class="c3"
       viewBox="0 0 11.78 14"
       xmlns="http://www.w3.org/2000/svg"
     >
