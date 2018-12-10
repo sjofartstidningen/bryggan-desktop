@@ -29,6 +29,8 @@ const initialize = async () => {
   windows.set(name, win);
   loadRoute(win, name, is.development);
 
+  win.on('close', () => windows.delete(name));
+
   await waitForRenderer(`${name}-ready`);
   return win;
 };
