@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useReady } from '../hooks';
 import { Header } from '../components/Header';
 import { Breadcrumbs } from '../components/Breadcrumbs';
@@ -15,7 +15,7 @@ const filterRelevant = showAll => item =>
 function FilePicker() {
   useReady('file-picker');
   const [showAll, setShowAll] = useState(false);
-  const { state, items, currentPath, error, goToPath } = useListFolder(
+  const { state, items, currentPath, error, goToPath, update } = useListFolder(
     '/Tidningen/2018/11',
   );
 
@@ -25,14 +25,27 @@ function FilePicker() {
   );
 
   const onFolderClick = path => () => goToPath(path);
+
   const onFileClick = path => () => {
     const ipc = require('electron-better-ipc');
     ipc.callMain('open-file', { path });
   };
+
   const onIdFileClick = path => () => {
     const ipc = require('electron-better-ipc');
     ipc.callMain('open-id-file', { path });
   };
+
+  useEffect(() => {
+    const onKeypress = e => {
+      if (e.keyCode === 114) {
+        e.preventDefault();
+        update();
+      }
+    };
+    window.addEventListener('keypress', onKeypress);
+    return () => window.removeEventListener('keypress', onKeypress);
+  }, []);
 
   return (
     <div>
