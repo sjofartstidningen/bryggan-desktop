@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef, useMemo, useEffect } from 'react';
 import { join } from 'path';
 import styled, { css } from 'styled-components';
 import { hideVisually } from 'polished';
@@ -22,6 +22,10 @@ const Wrapper = styled.ul`
   padding: 0.5rem 0;
   transition: padding 0.3s ease-in-out;
 
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
   .sticky & {
     padding-top: calc(var(--electron-safe-inset, 0));
   }
@@ -29,6 +33,7 @@ const Wrapper = styled.ul`
 
 const BreadcrumbItem = styled.li`
   position: relative;
+  white-space: nowrap;
 
   &:not(:last-child)::after {
     content: '>';
@@ -70,22 +75,40 @@ const Hidden = styled.span`
 `;
 
 function Breadcrumbs({ currentPath, onPathClick }) {
-  const fragments = currentPath
-    .split(/\//g)
-    .filter(Boolean)
-    .reduce(
-      (paths, folder) => {
-        const lastFolderPath = last(paths).path;
-        return [
-          ...paths,
-          { path: join('/', lastFolderPath, folder), name: folder },
-        ];
-      },
-      [{ path: '/', name: 'Home' }],
-    );
+  const wrapper = useRef(null);
+  const fragments = useMemo(
+    () =>
+      currentPath
+        .split(/\//g)
+        .filter(Boolean)
+        .reduce(
+          (paths, folder) => {
+            const lastFolderPath = last(paths).path;
+            return [
+              ...paths,
+              { path: join('/', lastFolderPath, folder), name: folder },
+            ];
+          },
+          [{ path: '/', name: 'Home' }],
+        ),
+    [currentPath],
+  );
+
+  useEffect(
+    () => {
+      const frameId = requestAnimationFrame(() => {
+        const elem = wrapper.current;
+        const { width } = elem.getBoundingClientRect();
+        elem.scrollLeft = width;
+      });
+
+      return () => cancelAnimationFrame(frameId);
+    },
+    [currentPath],
+  );
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapper}>
       {fragments.map(frag => (
         <BreadcrumbItem key={frag.path}>
           <BreadcrumbButton
