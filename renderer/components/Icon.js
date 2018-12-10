@@ -97,12 +97,12 @@ const IdFile = createIcon(() => (
   <Fragment>
     <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
     <path
-      fill="#000"
+      fill="currentColor"
       strokeWidth="0"
       d="M9.57,16c0,.08,0,.1-.1.1H8.32c-.08,0-.1,0-.1-.1V7.91c0-.07,0-.1.1-.1H9.48a.08.08,0,0,1,.09.09Z"
     />
     <path
-      fill="#000"
+      fill="currentColor"
       strokeWidth="0"
       d="M15.75,14.9v-7s0-.06-.08-.06H14.45a.07.07,0,0,0-.07.08v2H14a3,3,0,0,0-3.08,3.2h0c0,2.09,1.19,3.12,2.85,3.12a4.59,4.59,0,0,0,2-.45s.06,0,.06-.08A7.15,7.15,0,0,1,15.75,14.9Zm-1.37-3.8v3.8a1.53,1.53,0,0,1-.54.09c-.86,0-1.55-.57-1.55-2,0-1.24.67-2,1.64-2a1.13,1.13,0,0,1,.45.08Z"
     />
@@ -117,4 +117,18 @@ const XCircle = createIcon(() => (
   </Fragment>
 ));
 
-export { Icon, Home, Folder, File, IdFile, XCircle, IconWrapper, IconSvg };
+const FilledCircle = createIcon(() => (
+  <circle fill="currentColor" cx="12" cy="12" r="10" />
+));
+
+export {
+  Icon,
+  Home,
+  Folder,
+  File,
+  IdFile,
+  XCircle,
+  IconWrapper,
+  IconSvg,
+  FilledCircle,
+};
