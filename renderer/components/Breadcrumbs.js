@@ -20,6 +20,11 @@ const Wrapper = styled.ul`
   background-color: rgb(250, 251, 252);
   overflow-x: scroll;
   padding: 0.5rem 0;
+  transition: padding 0.3s ease-in-out;
+
+  .sticky & {
+    padding-top: calc(var(--electron-safe-inset, 0));
+  }
 `;
 
 const BreadcrumbItem = styled.li`

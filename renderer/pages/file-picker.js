@@ -5,56 +5,42 @@ import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FolderList } from '../components/FolderList';
 import { EmptyFolder } from '../components/EmptyFolder';
 import { Folder, File, IdFile } from '../components/Icon';
+import { Sticky } from '../components/Sticky';
 import { useListFolder } from '../hooks/dropbox';
+import { sortByType } from '../utils';
+
+const filterRelevant = showAll => item =>
+  showAll || item.type === 'folder' || item.name.endsWith('.indd');
 
 function FilePicker() {
-  const [showAll, setShowAll] = useState(false);
   const { state, items, currentPath, error, goToPath } = useListFolder({
-    initialPath: '/',
+    initialPath: '/Bildbank/Adam Bergman/Bilder',
     apiKey: process.env.DROPBOX_API_KEY,
   });
 
   const filteredItems = useMemo(
-    () =>
-      items
-        .filter(
-          item =>
-            showAll || item.type === 'folder' || item.name.endsWith('.indd'),
-        )
-        .sort((a, b) => {
-          // Sort order is Folders before files, then alphabetically
-          if (a.type !== b.type) return a.type > b.type ? -1 : 1;
-          if (a.name > b.name) return 1;
-          if (a.name < b.name) return -1;
-          return 0;
-        }),
-    [items, showAll],
+    () => items.filter(filterRelevant(false)).sort(sortByType),
+    [items],
   );
 
   useReady('file-picker');
 
   return (
     <div>
-      <Header />
-      <section>
+      <div style={{ zIndex: 1 }}>
+        <Header />
+      </div>
+
+      <Sticky as="section" style={{ zIndex: 2 }}>
         <nav>
           <Breadcrumbs
             currentPath={currentPath}
             onPathClick={({ path }) => goToPath(path)}
           />
         </nav>
+      </Sticky>
 
-        <label htmlFor="checkbox-show-all">
-          <input
-            type="checkbox"
-            checked={showAll}
-            onChange={() => setShowAll(!showAll)}
-          />
-          <span>Show all files</span>
-        </label>
-      </section>
-
-      <main>
+      <main style={{ zIndex: 1 }}>
         {state === 'initial' && <p>Loading</p>}
         {state === 'fetching' && <p>Loading</p>}
         {state === 'error' && <p>{error.message}</p>}
