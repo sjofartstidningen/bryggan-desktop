@@ -1,9 +1,9 @@
 import { BrowserWindow } from 'electron';
 import { is } from 'electron-util';
-import { windows } from './utils/cache';
+import ipc from 'electron-better-ipc';
+import { windows } from './utils/window-cache';
 import { loadRoute } from './utils/routes';
 import { waitForRenderer } from './utils/ipc';
-import ipc from 'electron-better-ipc';
 
 const name = 'file-picker';
 

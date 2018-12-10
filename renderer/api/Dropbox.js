@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { createSimpleCache } from '../utils';
+import { createSimpleCache } from '../../shared/simple-cache';
+import { minutes } from '../../shared/time';
 
 const normalizeFolderContent = entries =>
   entries
@@ -30,7 +31,7 @@ const normalizeFolderContent = entries =>
     })
     .filter(Boolean);
 
-const listFolderCache = createSimpleCache();
+const listFolderCache = createSimpleCache(minutes(1).toMilliseconds());
 
 async function listFolder(path, { apiKey, cancelToken, ignoreCache } = {}) {
   if (typeof apiKey !== 'string') {

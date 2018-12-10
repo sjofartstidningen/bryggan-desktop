@@ -3,7 +3,7 @@ import * as Dropbox from '../Dropbox';
 import { filesListFolder } from '../../__fixtures__/Dropbox';
 
 jest.mock('axios');
-jest.mock('../../utils');
+jest.mock('../../../shared/simple-cache.js');
 axios.post.mockImplementation(() => Promise.resolve({ data: filesListFolder }));
 
 describe('Api: Dropbox.listFolder', () => {

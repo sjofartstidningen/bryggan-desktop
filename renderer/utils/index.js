@@ -33,15 +33,4 @@ const hasIdlkFile = (file, items) => {
   return false;
 };
 
-const createSimpleCache = () => {
-  const cache = new Map();
-  return {
-    set: (key, value) => cache.set(key, value),
-    get: key => cache.get(key),
-    has: key => cache.has(key),
-    delete: key => cache.delete(key),
-    clear: () => cache.clear(),
-  };
-};
-
-export { sortByType, hasIdlkFile, createSimpleCache };
+export { sortByType, hasIdlkFile };
