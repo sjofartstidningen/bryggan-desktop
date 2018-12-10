@@ -148,6 +148,8 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     margin-top: var(--electron-safe-inset);
+    -webkit-font-smoothing: antialiased;
+	  -moz-osx-font-smoothing: grayscale;
   }
 `;
 
