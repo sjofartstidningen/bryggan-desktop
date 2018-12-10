@@ -3,6 +3,7 @@ import { is } from 'electron-util';
 import { windows } from './utils/cache';
 import { loadRoute } from './utils/routes';
 import { waitForRenderer } from './utils/ipc';
+import ipc from 'electron-better-ipc';
 
 const name = 'file-picker';
 
@@ -30,6 +31,9 @@ const initialize = async () => {
   loadRoute(win, name, is.development);
 
   win.on('close', () => windows.delete(name));
+
+  ipc.answerRenderer('open-file', ({ path }) => console.log('path: ', path));
+  ipc.answerRenderer('open-id-file', ({ path }) => console.log('path: ', path));
 
   await waitForRenderer(`${name}-ready`);
   return win;

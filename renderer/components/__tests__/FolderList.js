@@ -1,8 +1,6 @@
 import React from 'react';
-import { render, fireEvent } from 'react-testing-library';
-import { find } from 'styled-components/test-utils';
+import { render } from 'react-testing-library';
 import { FolderList } from '../FolderList';
-import { IconSvg, Home } from '../Icon';
 
 describe('Component: <FolderList />', () => {
   it('should render a list of folder items', () => {
@@ -12,47 +10,32 @@ describe('Component: <FolderList />', () => {
       { type: 'folder', name: 'C', path: '/Alphabet/C' },
       { type: 'file', name: 'text.txt', path: '/Alphabet/text.txt' },
     ];
-    const { getByText } = render(<FolderList items={items} />);
 
-    expect(getByText(/^A$/)).toBeInTheDocument();
-    expect(getByText(/^text\.txt$/)).toBeInTheDocument();
-  });
+    const renderFolder = jest.fn(({ name }) => <p>{name}</p>);
+    const renderFile = jest.fn(({ name }) => <p>{name}</p>);
 
-  it('should render a icon if provided', () => {
-    const items = [
-      { type: 'folder', name: 'A', path: '/Alphabet/A' },
-      { type: 'folder', name: 'B', path: '/Alphabet/B' },
-      { type: 'folder', name: 'C', path: '/Alphabet/C' },
-      { type: 'file', name: 'text.txt', path: '/Alphabet/text.txt' },
-    ];
-
-    const { container } = render(
-      <FolderList items={items} renderIcon={() => <Home />} />,
-    );
-
-    expect(find(container, IconSvg)).toBeInTheDocument();
-  });
-
-  it('should react to clicks on items', () => {
-    const items = [
-      { type: 'folder', name: 'A', path: '/Alphabet/A' },
-      { type: 'file', name: 'text.txt', path: '/Alphabet/text.txt' },
-    ];
-
-    const onClick = jest.fn();
-
-    const { getByText } = render(
+    render(
       <FolderList
         items={items}
-        renderIcon={() => <Home />}
-        onItemClick={onClick}
+        renderFolder={renderFolder}
+        renderFile={renderFile}
       />,
     );
 
-    fireEvent.click(getByText(/^A$/));
+    expect(renderFolder).toHaveBeenCalledTimes(3);
+    expect(renderFile).toHaveBeenCalledTimes(1);
+  });
 
-    expect(onClick).toHaveBeenCalled();
-    expect(onClick).toHaveBeenLastCalledWith(items[0]);
+  it('should render call a special function for .indd-files', () => {
+    const items = [
+      { type: 'file', name: 'test.indd', path: '/InDesign/test.indd' },
+      { type: 'file', name: 'test2.indd', path: '/InDesign/test2.indd' },
+    ];
+
+    const renderIndd = jest.fn(({ name }) => <p>{name}</p>);
+    render(<FolderList items={items} renderIndd={renderIndd} />);
+
+    expect(renderIndd).toHaveBeenCalledTimes(2);
   });
 
   it('should render an empty state if no items in folder', () => {
