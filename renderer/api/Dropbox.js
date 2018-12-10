@@ -1,6 +1,17 @@
 import axios from 'axios';
 import { createSimpleCache } from '../../shared/simple-cache';
-import { minutes } from '../../shared/time';
+import { minutes, days } from '../../shared/time';
+
+const checkApiKey = apiKey => {
+  if (typeof apiKey !== 'string') {
+    throw new Error('An api key is required to request folder contents');
+  }
+};
+
+const construcHeaders = apiKey => ({
+  Authorization: `Bearer ${apiKey}`,
+  'Content-Type': 'application/json',
+});
 
 const normalizeFolderContent = entries =>
   entries
@@ -34,9 +45,7 @@ const normalizeFolderContent = entries =>
 const listFolderCache = createSimpleCache(minutes(1).toMilliseconds());
 
 async function listFolder(path, { apiKey, cancelToken, ignoreCache } = {}) {
-  if (typeof apiKey !== 'string') {
-    throw new Error('An api key is required to request folder contents');
-  }
+  checkApiKey(apiKey);
 
   let data;
 
@@ -47,10 +56,7 @@ async function listFolder(path, { apiKey, cancelToken, ignoreCache } = {}) {
       'https://api.dropboxapi.com/2/files/list_folder',
       { path: path === '/' ? '' : path },
       {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
+        headers: construcHeaders(apiKey),
         cancelToken,
       },
     );
@@ -62,4 +68,35 @@ async function listFolder(path, { apiKey, cancelToken, ignoreCache } = {}) {
   return { items: normalizeFolderContent(data.entries) };
 }
 
-export { listFolder, listFolderCache };
+const getAccountCache = createSimpleCache(days(1).toMilliseconds());
+
+async function getAccount(accountId, { apiKey, cancelToken, ignoreCache }) {
+  checkApiKey(apiKey);
+
+  let data;
+
+  if (!ignoreCache && getAccountCache.has(accountId)) {
+    data = getAccountCache.get(accountId);
+  } else {
+    const response = await axios.post(
+      'https://api.dropboxapi.com/2/users/get_account',
+      { account_id: accountId },
+      {
+        headers: construcHeaders(apiKey),
+        cancelToken,
+      },
+    );
+
+    data = response.data;
+    getAccountCache.set(accountId, data);
+  }
+  return {
+    account: {
+      id: data.account_id,
+      displayName: data.name.display_name,
+      profilePhotoUrl: data.profile_photo_url,
+    },
+  };
+}
+
+export { listFolderCache, listFolder, getAccountCache, getAccount };

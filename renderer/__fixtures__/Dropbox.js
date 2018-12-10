@@ -251,4 +251,22 @@ const filesListFolder = {
   has_more: false,
 };
 
-export { filesListFolder };
+const getAccount = {
+  account_id: 'dbid:AACrh22Y3qGiQTCRwwE3IHv4GvbjqNoznG8',
+  name: {
+    given_name: 'Adam',
+    surname: 'Bergman',
+    familiar_name: 'Adam',
+    display_name: 'Adam Bergman',
+    abbreviated_name: 'AB',
+  },
+  email: 'adam.bergman@sjofartstidningen.se',
+  email_verified: true,
+  profile_photo_url:
+    'https://dl-web.dropbox.com/account_photo/get/dbaphid%3AAAB-Yblu_z6W0CyArB8E-ymgpphnLEabMkk?size=128x128&vers=1460967974696',
+  disabled: false,
+  is_teammate: true,
+  team_member_id: 'dbmid:AADhwrnyWESM_u0pImgwyWiB3lHn3ac4ioY',
+};
+
+export { filesListFolder, getAccount };

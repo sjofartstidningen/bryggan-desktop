@@ -1,10 +1,13 @@
 import axios from 'axios';
 import * as Dropbox from '../Dropbox';
-import { filesListFolder } from '../../__fixtures__/Dropbox';
+import { filesListFolder, getAccount } from '../../__fixtures__/Dropbox';
 
 jest.mock('axios');
 jest.mock('../../../shared/simple-cache.js');
-axios.post.mockImplementation(() => Promise.resolve({ data: filesListFolder }));
+
+afterEach(() => {
+  axios.post.mockReset();
+});
 
 describe('Api: Dropbox.listFolder', () => {
   beforeEach(() => {
@@ -17,6 +20,7 @@ describe('Api: Dropbox.listFolder', () => {
   });
 
   it('should return a normalized array of files and folders of the provided path', async () => {
+    axios.post.mockResolvedValue({ data: filesListFolder });
     const path = '/Tidningen/2018/11';
     const { items } = await Dropbox.listFolder(path, {
       apiKey: 'foo',
@@ -44,6 +48,8 @@ describe('Api: Dropbox.listFolder', () => {
   });
 
   it('should fetch items from cache if possible', async () => {
+    axios.post.mockResolvedValue({ data: filesListFolder });
+
     await Dropbox.listFolder('/Tidningen/2018/11', { apiKey: 'foo' });
     expect(Dropbox.listFolderCache.get).not.toHaveBeenCalled();
 
@@ -52,6 +58,8 @@ describe('Api: Dropbox.listFolder', () => {
   });
 
   it('should ignore cache if told to', async () => {
+    axios.post.mockResolvedValue({ data: filesListFolder });
+
     await Dropbox.listFolder('/Tidningen/2018/11', { apiKey: 'foo' });
     expect(Dropbox.listFolderCache.get).not.toHaveBeenCalled();
 
@@ -60,5 +68,56 @@ describe('Api: Dropbox.listFolder', () => {
       ignoreCache: true,
     });
     expect(Dropbox.listFolderCache.get).not.toHaveBeenCalled();
+  });
+});
+
+describe('Api: Dropbox.getAccount', () => {
+  beforeEach(() => {
+    Dropbox.getAccountCache.get.mockClear();
+    Dropbox.getAccountCache.clear();
+  });
+
+  it('should throw if apiKey is not provided', async () => {
+    await expect(Dropbox.getAccount('accountId')).rejects.toThrow();
+  });
+
+  it('should return normalized information about an account', async () => {
+    axios.post.mockResolvedValue({ data: getAccount });
+
+    const { account } = await Dropbox.getAccount('account-id', {
+      apiKey: 'apiKey',
+    });
+
+    const expectedShape = expect.objectContaining({
+      id: expect.any(String),
+      displayName: expect.any(String),
+      profilePhotoUrl: expect.any(String),
+    });
+
+    expect(account).toEqual(expectedShape);
+    expect(account).toMatchSnapshot();
+  });
+
+  it('should fetch items from cache if possible', async () => {
+    axios.post.mockResolvedValue({ data: getAccount });
+
+    await Dropbox.getAccount('account-id', { apiKey: 'foo' });
+    expect(Dropbox.getAccountCache.get).not.toHaveBeenCalled();
+
+    await Dropbox.getAccount('account-id', { apiKey: 'foo' });
+    expect(Dropbox.getAccountCache.get).toHaveBeenCalled();
+  });
+
+  it('should ignore cache if told to', async () => {
+    axios.post.mockResolvedValue({ data: getAccount });
+
+    await Dropbox.getAccount('account-id', { apiKey: 'foo' });
+    expect(Dropbox.getAccountCache.get).not.toHaveBeenCalled();
+
+    await Dropbox.getAccount('account-id', {
+      apiKey: 'foo',
+      ignoreCache: true,
+    });
+    expect(Dropbox.getAccountCache.get).not.toHaveBeenCalled();
   });
 });

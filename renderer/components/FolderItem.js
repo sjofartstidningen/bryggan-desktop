@@ -7,6 +7,7 @@ import {
   IdFile as IdIcon,
   FilledCircle,
 } from './Icon';
+import { DisplayName } from './DisplayName';
 import { hasIdlkFile } from '../utils';
 
 const Wrapper = styled.div`
@@ -15,6 +16,8 @@ const Wrapper = styled.div`
 
 const Button = styled.button`
   display: flex;
+  justify-content: flex-start;
+  align-items: center;
   width: 100%;
   border: none;
   padding: 0.35rem 0.25rem;
@@ -89,7 +92,12 @@ function IdFile({ file, folderContent, onClick }) {
         <IconWrapper aria-hidden="true">
           <IdIcon />
         </IconWrapper>
-        <span>{file.name}</span>
+        <div>
+          <p>{file.name}</p>
+          <p>
+            Last modified by: <DisplayName accountId={file.modifiedBy} />
+          </p>
+        </div>
         <IndicatorWrapper canAccess={canAccess}>
           <FilledCircle />
         </IndicatorWrapper>
