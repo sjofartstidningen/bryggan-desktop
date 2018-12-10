@@ -45,13 +45,8 @@ describe('Api: Dropbox.listFolder', () => {
       cancelToken: controller.token,
     });
 
-    controller.cancel('Aborted');
-
-    try {
-      await promise;
-      throw new Error('If reached something is wrong');
-    } catch (err) {
-      expect(err.message).toMatch(/Aborted/);
-    }
+    const message = 'Aborted';
+    controller.cancel(message);
+    await expect(promise).rejects.toEqual({ message });
   });
 });
