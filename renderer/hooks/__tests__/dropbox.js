@@ -8,15 +8,13 @@ import {
 import axios from 'axios';
 import { useListFolder } from '../dropbox';
 import { filesListFolder } from '../../__fixtures__/Dropbox';
+import { Provider as DropboxProvider } from '../../context/Dropbox';
 
 jest.mock('axios');
 
 describe('hook: useListFolder', () => {
   const Comp = () => {
-    const { state, currentPath, items, error, goToPath } = useListFolder({
-      initialPath: '/',
-      apiKey: 'foo',
-    });
+    const { state, currentPath, items, error, goToPath } = useListFolder('/');
 
     if (state === 'initial' || state === 'fetching') return <p>Loading</p>;
     if (state === 'error') return <p>{error.message}</p>;
@@ -40,7 +38,11 @@ describe('hook: useListFolder', () => {
       Promise.resolve({ data: filesListFolder }),
     );
 
-    const { getByText } = render(<Comp />);
+    const { getByText } = render(
+      <DropboxProvider apiKey="foo">
+        <Comp />
+      </DropboxProvider>,
+    );
 
     expect(getByText(/loading/i)).toBeInTheDocument();
 

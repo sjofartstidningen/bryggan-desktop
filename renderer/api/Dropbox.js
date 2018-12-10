@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { createSimpleCache } from '../utils';
 
 const normalizeFolderContent = entries =>
   entries
@@ -29,24 +30,35 @@ const normalizeFolderContent = entries =>
     })
     .filter(Boolean);
 
-async function listFolder(path, { apiKey, cancelToken } = {}) {
+const listFolderCache = createSimpleCache();
+
+async function listFolder(path, { apiKey, cancelToken, ignoreCache } = {}) {
   if (typeof apiKey !== 'string') {
     throw new Error('An api key is required to request folder contents');
   }
 
-  const response = await axios.post(
-    'https://api.dropboxapi.com/2/files/list_folder',
-    { path: path === '/' ? '' : path },
-    {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      cancelToken,
-    },
-  );
+  let data;
 
-  return { items: normalizeFolderContent(response.data.entries) };
+  if (!ignoreCache && listFolderCache.has(path)) {
+    data = listFolderCache.get(path);
+  } else {
+    const response = await axios.post(
+      'https://api.dropboxapi.com/2/files/list_folder',
+      { path: path === '/' ? '' : path },
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        cancelToken,
+      },
+    );
+
+    data = response.data;
+    listFolderCache.set(path, data);
+  }
+
+  return { items: normalizeFolderContent(data.entries) };
 }
 
-export { listFolder };
+export { listFolder, listFolderCache };

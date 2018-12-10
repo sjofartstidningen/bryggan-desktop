@@ -1,42 +1,45 @@
-import * as Dropbox from '../api/Dropbox';
+import { useState, useEffect, useContext } from 'react';
 import axios, { CancelToken } from 'axios';
-import { useState, useEffect } from 'react';
+import { DropboxContext } from '../context/Dropbox';
 
-function useListFolder({ initialPath = '/', apiKey } = {}) {
+function useListFolder(initialPath = '/') {
+  const dropbox = useContext(DropboxContext);
   const [currentPath, setPath] = useState(initialPath);
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
   const [state, setState] = useState('initial');
 
-  const goToPath = nextPath => setPath(nextPath);
+  const listFolder = async ({ ignoreCache = false, cancelToken }) => {
+    setState('fetching');
+
+    try {
+      const { items } = await dropbox.listFolder(currentPath, {
+        cancelToken,
+        ignoreCache,
+      });
+
+      setItems(items);
+      setError(null);
+      setState('success');
+    } catch (error) {
+      if (!axios.isCancel(error)) {
+        setError(error);
+        setState('error');
+      }
+    }
+  };
 
   useEffect(
     () => {
-      if (apiKey) {
-        setState('fetching');
-
-        const controller = CancelToken.source();
-
-        Dropbox.listFolder(currentPath, {
-          apiKey,
-          cancelToken: controller.token,
-        })
-          .then(({ items }) => {
-            setItems(items);
-            setError(null);
-            setState('success');
-          })
-          .catch(error => {
-            if (axios.isCancel(error)) return;
-            setError(error);
-            setState('error');
-          });
-
-        return () => controller.cancel();
-      }
+      const controller = CancelToken.source();
+      listFolder({ ignoreCache: false, cancelToken: controller.token });
+      return () => controller.cancel('Path updated or component unmounted');
     },
-    [currentPath, apiKey],
+    [currentPath],
   );
+
+  const goToPath = nextPath => setPath(nextPath);
+  const update = () => listFolder({ ignoreCache: true });
 
   return {
     state,
@@ -44,6 +47,7 @@ function useListFolder({ initialPath = '/', apiKey } = {}) {
     items,
     error,
     goToPath,
+    update,
   };
 }
 

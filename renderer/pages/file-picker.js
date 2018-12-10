@@ -15,10 +15,9 @@ const filterRelevant = showAll => item =>
 function FilePicker() {
   useReady('file-picker');
   const [showAll, setShowAll] = useState(false);
-  const { state, items, currentPath, error, goToPath } = useListFolder({
-    initialPath: '/Tidningen/2018/11',
-    apiKey: process.env.DROPBOX_API_KEY,
-  });
+  const { state, items, currentPath, error, goToPath } = useListFolder(
+    '/Tidningen/2018/11',
+  );
 
   const filteredItems = useMemo(
     () => items.filter(filterRelevant(showAll)).sort(sortByType),
