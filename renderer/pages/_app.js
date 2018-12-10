@@ -3,6 +3,7 @@ import NextApp, { Container } from 'next/app';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '../components/GlobalStyle';
 import { Provider as DropboxProvider } from '../context/Dropbox';
+import { DraggableArea } from '../components/DraggableArea';
 
 class App extends NextApp {
   static async getInitialProps({ Component, ctx }) {
@@ -23,6 +24,7 @@ class App extends NextApp {
           <DropboxProvider apiKey={dropboxApiKey}>
             <Fragment>
               <GlobalStyle />
+              <DraggableArea />
               <Component {...pageProps} />
             </Fragment>
           </DropboxProvider>
