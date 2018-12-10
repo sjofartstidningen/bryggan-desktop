@@ -14,7 +14,7 @@ const filterRelevant = showAll => item =>
 
 function FilePicker() {
   const { state, items, currentPath, error, goToPath } = useListFolder({
-    initialPath: '/Bildbank/Adam Bergman/Bilder',
+    initialPath: '/',
     apiKey: process.env.DROPBOX_API_KEY,
   });
 
