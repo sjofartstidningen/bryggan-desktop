@@ -34,16 +34,17 @@ async function listFolder(path, { apiKey, cancelToken } = {}) {
     throw new Error('An api key is required to request folder contents');
   }
 
-  const response = await axios({
-    url: 'https://api.dropboxapi.com/2/files/list_folder',
-    method: 'post',
-    data: { path: path === '/' ? '' : path },
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
+  const response = await axios.post(
+    'https://api.dropboxapi.com/2/files/list_folder',
+    { path: path === '/' ? '' : path },
+    {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      cancelToken,
     },
-    cancelToken,
-  });
+  );
 
   return { items: normalizeFolderContent(response.data.entries) };
 }

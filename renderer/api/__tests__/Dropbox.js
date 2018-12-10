@@ -1,9 +1,8 @@
-import { CancelToken, __setResponseData } from 'axios';
+import axios from 'axios';
 import * as Dropbox from '../Dropbox';
 import { filesListFolder } from '../../__fixtures__/Dropbox';
 
 jest.mock('axios');
-__setResponseData({ data: filesListFolder });
 
 describe('Api: Dropbox.listFolder', () => {
   it('should throw if apiKey is not provided', async () => {
@@ -11,6 +10,10 @@ describe('Api: Dropbox.listFolder', () => {
   });
 
   it('should return a normalized array of files and folders of the provided path', async () => {
+    axios.post.mockImplementationOnce(() =>
+      Promise.resolve({ data: filesListFolder }),
+    );
+
     const path = '/Tidningen/2018/11';
     const { items } = await Dropbox.listFolder(path, {
       apiKey: 'foo',
@@ -35,18 +38,5 @@ describe('Api: Dropbox.listFolder', () => {
 
     expect(items).toEqual(expect.arrayContaining([folder, file]));
     expect(items).toMatchSnapshot();
-  });
-
-  it('should be cancellable', async () => {
-    const controller = CancelToken.source();
-
-    const promise = Dropbox.listFolder('/path', {
-      apiKey: 'foo',
-      cancelToken: controller.token,
-    });
-
-    const message = 'Aborted';
-    controller.cancel(message);
-    await expect(promise).rejects.toEqual({ message });
   });
 });

@@ -1,24 +1,15 @@
-const axios = jest.requireActual('axios');
-const settle = require('axios/lib/core/settle');
+class CancelToken {
+  constructor() {
+    this.cancel = jest.fn();
+    this.token = 'token';
+  }
+}
 
-let __responseData = {};
-const __setResponseData = res => (__responseData = res);
+CancelToken.source = jest.fn(() => new CancelToken());
 
-axios.defaults.adapter = function adapter(config) {
-  return new Promise((resolve, reject) => {
-    const response = {
-      status: 200,
-      statusText: 'OK',
-      headers: {},
-      config,
-      request: null,
-      ...__responseData,
-    };
-
-    setTimeout(() => settle(resolve, reject, response));
-  });
+module.exports = {
+  get: jest.fn(() => Promise.resolve({ data: null })),
+  post: jest.fn(() => Promise.resolve({ data: null })),
+  CancelToken: CancelToken,
+  isCancel: jest.fn(err => err instanceof CancelToken),
 };
-
-axios.__setResponseData = __setResponseData;
-
-module.exports = axios;

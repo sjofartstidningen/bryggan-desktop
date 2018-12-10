@@ -5,12 +5,11 @@ import {
   waitForElement,
   fireEvent,
 } from 'react-testing-library';
-import { __setResponseData } from 'axios';
+import axios from 'axios';
 import { useListFolder } from '../dropbox';
 import { filesListFolder } from '../../__fixtures__/Dropbox';
 
 jest.mock('axios');
-__setResponseData({ data: filesListFolder });
 
 describe('hook: useListFolder', () => {
   const Comp = () => {
@@ -37,6 +36,10 @@ describe('hook: useListFolder', () => {
   };
 
   it('should fetch folder contents in provided folder', async () => {
+    axios.post.mockImplementation(() =>
+      Promise.resolve({ data: filesListFolder }),
+    );
+
     const { getByText } = render(<Comp />);
 
     expect(getByText(/loading/i)).toBeInTheDocument();
