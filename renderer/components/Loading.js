@@ -10,7 +10,7 @@ const LoadingWrapper = styled.div`
   justify-content: center;
   align-items: center;
   padding-top: 1rem;
-  color: rgb(68, 68, 68);
+  color: ${p => p.theme.color.darkGrey};
 `;
 
 const IconWrapper = styled.div`

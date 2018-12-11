@@ -1,22 +1,16 @@
+import React from 'react';
 import { render } from 'react-testing-library';
+import { ThemeProvider } from 'styled-components';
+import * as theme from '../renderer/style/theme';
+
+const renderWithTheme = comp =>
+  render(<ThemeProvider theme={theme}>{comp}</ThemeProvider>);
 
 const renderAndMatch = (comp, message = 'should render without issues') => {
   it(message, () => {
-    const { container } = render(comp);
+    const { container } = renderWithTheme(comp);
     expect(container.firstChild).toMatchSnapshot();
   });
 };
 
-const requireCache = new Map();
-const addPackageToRequire = (name, implementation) => {
-  requireCache.set(name, implementation);
-
-  const windowRequire = pkgName => {
-    if (requireCache.has(pkgName)) return requireCache.get(pkgName);
-    throw new Error(`Package '${pkgName}' not found`);
-  };
-
-  window.require = window.require || windowRequire;
-};
-
-export { renderAndMatch, addPackageToRequire };
+export { renderAndMatch, renderWithTheme };

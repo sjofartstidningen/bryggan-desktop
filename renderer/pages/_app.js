@@ -4,6 +4,7 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '../components/GlobalStyle';
 import { Provider as DropboxProvider } from '../context/Dropbox';
 import { DraggableArea } from '../components/DraggableArea';
+import * as theme from '../style/theme';
 
 class App extends NextApp {
   componentDidMount() {
@@ -17,7 +18,7 @@ class App extends NextApp {
 
     return (
       <Container>
-        <ThemeProvider theme={{}}>
+        <ThemeProvider theme={theme}>
           <DropboxProvider apiKey={dropboxApiKey}>
             <Fragment>
               <GlobalStyle />

@@ -31,12 +31,12 @@ const MenuToggleButton = styled.button`
   border-radius: 100%;
   padding: 0;
   font-size: 1rem;
-  color: rgb(153, 153, 153);
+  color: ${p => p.theme.color.grey};
   background-color: transparent;
 
   &:focus,
   &:hover {
-    color: rgb(0, 0, 0);
+    color: ${p => p.theme.color.black};
     outline: none;
   }
 `;

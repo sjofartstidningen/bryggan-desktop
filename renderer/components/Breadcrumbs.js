@@ -12,12 +12,10 @@ const Wrapper = styled.ul`
   justify-content: flex-start;
   list-style: none;
   width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    sans-serif;
-  font-size: 0.75rem;
-  color: rgb(68, 68, 68);
-  background-color: rgb(250, 251, 252);
+  font-family: ${p => p.theme.font.family};
+  font-size: ${p => p.theme.font.size.normal};
+  color: ${p => p.theme.color.darkGrey};
+  background-color: ${p => p.theme.color.lightGrey};
   overflow-x: scroll;
   padding: 0.5rem 0;
   transition: padding 0.3s ease-in-out;
@@ -37,7 +35,7 @@ const BreadcrumbItem = styled.li`
 
   &:not(:last-child)::after {
     content: '>';
-    color: rgb(114, 121, 129);
+    color: ${p => p.theme.color.grey};
   }
 `;
 
@@ -45,17 +43,15 @@ const BreadcrumbButton = styled.button`
   margin: 0;
   border: none;
   padding: 0 0.25rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    sans-serif;
-  font-size: 0.75rem;
+  font-family: ${p => p.theme.font.family};
+  font-size: ${p => p.theme.font.size.normal};
   font-weight: 400;
-  color: rgb(68, 68, 68);
+  color: ${p => p.theme.color.darkGrey};
   background-color: transparent;
   cursor: pointer;
 
   &:hover {
-    color: rgb(0, 0, 0);
+    color: ${p => p.theme.color.black};
   }
 
   &:focus {
@@ -65,7 +61,7 @@ const BreadcrumbButton = styled.button`
   ${p =>
     p.active &&
     css`
-      color: rgb(0, 0, 0);
+      color: ${p => p.theme.color.black};
       font-weight: 600;
     `}
 `;

@@ -45,7 +45,7 @@ exports[`Component: <Loading /> should render a loader 1`] = `
   -ms-flex-align: center;
   align-items: center;
   padding-top: 1rem;
-  color: rgb(68,68,68);
+  color: #444;
 }
 
 .c1 {

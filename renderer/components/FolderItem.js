@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { rgb } from 'polished';
 import {
   Folder as FolderIcon,
   File as FileIcon,
@@ -26,7 +25,7 @@ const Button = styled.button`
     Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     sans-serif;
   text-align: left;
-  color: rgb(68, 68, 68);
+  color: ${p => p.theme.color.darkGrey};
   background-color: transparent;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
@@ -36,13 +35,13 @@ const Button = styled.button`
   }
 
   &:hover {
-    color: rgb(0, 0, 0);
-    background-color: rgb(250, 251, 252);
+    color: ${p => p.theme.color.black};
+    background-color: ${p => p.theme.color.lightGrey};
   }
 
   &:disabled {
     cursor: default;
-    color: rgb(68, 68, 68);
+    color: ${p => p.theme.color.darkGrey};
     background-color: transparent;
   }
 `;
@@ -53,13 +52,13 @@ const IconWrapper = styled.span`
 
 const IndicatorWrapper = styled.span`
   margin-left: auto;
-  color: ${({ canAccess }) =>
-    canAccess ? rgb(52, 199, 73) : rgb(252, 96, 92)};
+  color: ${({ canAccess, theme }) =>
+    canAccess ? theme.color.green : theme.color.red};
 `;
 
 const FileName = styled.p``;
 const ModifiedBy = styled.p`
-  color: rgb(153, 153, 153);
+  color: ${p => p.theme.color.grey};
 `;
 
 function Folder({ file, onClick }) {

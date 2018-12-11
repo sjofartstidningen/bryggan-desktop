@@ -1,16 +1,17 @@
 import React from 'react';
-import { render, flushEffects, waitForElement } from 'react-testing-library';
+import { flushEffects, waitForElement } from 'react-testing-library';
+import { renderWithTheme } from '../../../tests/utils';
 import { Loading } from '../Loading';
 
 describe('Component: <Loading />', () => {
   it('should render a loader', () => {
-    const { container, getByText } = render(<Loading />);
+    const { container, getByText } = renderWithTheme(<Loading />);
     expect(getByText(/loading/i)).toBeInTheDocument();
     expect(container).toMatchSnapshot();
   });
 
   it('should be able to render only after a threshold', async () => {
-    const { getByText } = render(<Loading threshold={10} />);
+    const { getByText } = renderWithTheme(<Loading threshold={10} />);
 
     expect(() => getByText(/loading/i)).toThrow();
 
@@ -22,7 +23,7 @@ describe('Component: <Loading />', () => {
 
   it('should accept a message to supply the loading indicator', () => {
     const message = 'Hello I am loading';
-    const { getByText } = render(<Loading message={message} />);
+    const { getByText } = renderWithTheme(<Loading message={message} />);
     expect(getByText(message)).toBeInTheDocument();
   });
 });
