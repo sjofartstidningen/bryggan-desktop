@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { callMain } from '../utils/ipc';
 
-function useCallMain(thread, payload, when) {
+function useCallMain(channel, payload, when) {
   useEffect(() => {
-    callMain(thread, payload);
+    callMain(channel, payload);
   }, when);
 }
 

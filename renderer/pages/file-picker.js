@@ -11,13 +11,17 @@ import { useListFolder } from '../hooks/dropbox';
 import { sortByType } from '../utils';
 import { minutes } from '../../shared/time';
 import { useCallMain } from '../hooks/ipc';
+import { useInterval, useWindowEvent } from '../hooks';
 import { callMain } from '../utils/ipc';
 
 const filterRelevant = showAll => item =>
   showAll || item.type === 'folder' || item.name.endsWith('.indd');
 
-function FilePicker({ initialPath }) {
-  const [showAll, setShowAll] = useState(false);
+function FilePicker({ initialPath, showAllFiles }) {
+  const [showAll, setShowAll] = useState(() =>
+    showAllFiles === 'true' ? true : false,
+  );
+
   const { state, items, currentPath, error, goToPath, update } = useListFolder(
     initialPath,
   );
@@ -32,29 +36,9 @@ function FilePicker({ initialPath }) {
   const onIdFileClick = path => () => callMain('open-id-file', { path });
 
   useCallMain('dropbox-path-updated', { path: currentPath }, [currentPath]);
-
-  useEffect(
-    () => {
-      const onKeypress = e => {
-        if (e.keyCode === 114) {
-          e.preventDefault();
-          update();
-        }
-      };
-
-      window.addEventListener('keypress', onKeypress);
-      return () => window.removeEventListener('keypress', onKeypress);
-    },
-    [currentPath],
-  );
-
-  useEffect(
-    () => {
-      const intervalId = setInterval(update, minutes(1).toMilliseconds());
-      return () => clearInterval(intervalId);
-    },
-    [currentPath],
-  );
+  useCallMain('show-all-files-updated', { showAllFiles: showAll }, [showAll]);
+  useInterval(update, minutes(1).toMilliseconds(), [currentPath]);
+  useWindowEvent('keypress', e => e.keyCode === 114 && update(), [currentPath]);
 
   return (
     <div>
