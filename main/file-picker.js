@@ -1,6 +1,5 @@
 import { BrowserWindow } from 'electron';
 import { is } from 'electron-util';
-import ipc from 'electron-better-ipc';
 import { windows } from './utils/window-cache';
 import { loadRoute } from './utils/routes';
 import { waitForRenderer } from './utils/ipc';
@@ -31,9 +30,6 @@ const initialize = async () => {
   loadRoute(win, name, is.development);
 
   win.on('close', () => windows.delete(name));
-
-  ipc.answerRenderer('open-file', ({ path }) => console.log('path: ', path));
-  ipc.answerRenderer('open-id-file', ({ path }) => console.log('path: ', path));
 
   await waitForRenderer(`${name}-ready`);
   return win;
