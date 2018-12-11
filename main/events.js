@@ -12,6 +12,10 @@ function setupListeners() {
   ipc.answerRenderer('dropbox-path-updated', ({ path }) =>
     store.set('initialPath', path),
   );
+
+  ipc.answerRenderer('show-all-files-updated', ({ showAllFiles }) =>
+    store.set('showAllFiles', showAllFiles),
+  );
 }
 
 export { setupListeners };

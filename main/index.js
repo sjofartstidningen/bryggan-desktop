@@ -18,6 +18,7 @@ const getWindowConfig = () => ({
   query: {
     dropboxApiKey: store.get('dropboxApiKey'),
     initialPath: store.get('initialPath', '/'),
+    showAllFiles: store.get('showAllFiles', false),
   },
 });
 
