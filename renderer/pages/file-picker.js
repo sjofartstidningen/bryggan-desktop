@@ -1,10 +1,8 @@
 import { basename } from 'path';
 import React, { useState, useMemo, useEffect } from 'react';
-import { useReady } from '../hooks';
 import { Header } from '../components/Header';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FolderList } from '../components/FolderList';
-import { EmptyFolder } from '../components/EmptyFolder';
 import { Folder, File, IdFile } from '../components/FolderItem';
 import { Sticky } from '../components/Sticky';
 import { ContextMenu, ContextMenuItem } from '../components/ContextMenu';
@@ -16,11 +14,10 @@ import { minutes } from '../../shared/time';
 const filterRelevant = showAll => item =>
   showAll || item.type === 'folder' || item.name.endsWith('.indd');
 
-function FilePicker() {
-  useReady('file-picker');
+function FilePicker({ initialPath }) {
   const [showAll, setShowAll] = useState(false);
   const { state, items, currentPath, error, goToPath, update } = useListFolder(
-    '/Tidningen/2018/11',
+    initialPath,
   );
 
   const filteredItems = useMemo(
@@ -122,5 +119,9 @@ function FilePicker() {
     </div>
   );
 }
+
+FilePicker.defaultProps = {
+  initialPath: '/',
+};
 
 export default FilePicker;

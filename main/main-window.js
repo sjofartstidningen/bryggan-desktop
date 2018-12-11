@@ -1,12 +1,12 @@
 import { BrowserWindow } from 'electron';
 import { is } from 'electron-util';
 import { windows } from './utils/window-cache';
-import { loadRoute } from './utils/routes';
+import * as routes from './utils/routes';
 import { waitForRenderer } from './utils/ipc';
 
-const name = 'file-picker';
+const name = 'main-window';
 
-const initialize = async () => {
+const initialize = async ({ page, query } = {}) => {
   const win = new BrowserWindow({
     show: false,
     width: 300,
@@ -27,20 +27,39 @@ const initialize = async () => {
   });
 
   windows.set(name, win);
-  loadRoute(win, name, is.development);
-
   win.on('close', () => windows.delete(name));
 
-  await waitForRenderer(`${name}-ready`);
+  if (page) {
+    routes.loadRoute({
+      win,
+      page,
+      query,
+      devtools: is.development,
+    });
+    await waitForRenderer(`${name}-ready`);
+  }
+
   return win;
 };
 
-const show = async () => {
+const loadRoute = async ({ page, query } = {}) => {
+  if (windows.has(name)) {
+    const win = windows.get(name);
+    routes.loadRoute({
+      win,
+      page,
+      query,
+      devtools: is.development,
+    });
+  }
+};
+
+const show = async ({ page } = {}) => {
   if (windows.has(name)) {
     const win = windows.get(name);
     win.show();
   } else {
-    const win = await initialize();
+    const win = await initialize({ page });
     win.show();
   }
 };
@@ -52,4 +71,4 @@ const hide = () => {
   }
 };
 
-export { initialize, show, hide };
+export { initialize, show, hide, loadRoute };

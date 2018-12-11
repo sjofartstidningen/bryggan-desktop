@@ -2,7 +2,8 @@ import path from 'path';
 import { app } from 'electron';
 import prepareNext from 'electron-next';
 import { installDevTools } from './utils/dev-tools';
-import * as filePicker from './file-picker';
+import * as mainWindow from './main-window';
+import { setupListeners } from './open-file';
 import { parallell } from './utils/promise';
 
 (async () => {
@@ -13,10 +14,18 @@ import { parallell } from './utils/promise';
     () => installDevTools(),
   );
 
-  await filePicker.initialize();
-  await filePicker.show();
+  setupListeners();
 
-  app.on('activate', () => filePicker.show());
+  await mainWindow.initialize({
+    page: 'file-picker',
+    query: {
+      dropboxApiKey: process.env.DROPBOX_API_KEY,
+      initialPath: '/',
+    },
+  });
+  await mainWindow.show();
+
+  app.on('activate', () => mainWindow.show());
 })();
 
 app.on('window-all-closed', event => event.preventDefault());

@@ -6,18 +6,15 @@ import { Provider as DropboxProvider } from '../context/Dropbox';
 import { DraggableArea } from '../components/DraggableArea';
 
 class App extends NextApp {
-  static async getInitialProps({ Component, ctx }) {
-    let pageProps = {};
-
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx);
-    }
-
-    return { pageProps, dropboxApiKey: process.env.DROPBOX_API_KEY };
+  componentDidMount() {
+    const ipc = require('electron-better-ipc');
+    ipc.callMain(`main-window-ready`);
   }
 
   render() {
-    const { Component, pageProps, dropboxApiKey } = this.props;
+    const { Component, pageProps, router } = this.props;
+    const { dropboxApiKey, initialPath } = router.query;
+
     return (
       <Container>
         <ThemeProvider theme={{}}>
@@ -25,7 +22,7 @@ class App extends NextApp {
             <Fragment>
               <GlobalStyle />
               <DraggableArea />
-              <Component {...pageProps} />
+              <Component {...pageProps} initialPath={initialPath} />
             </Fragment>
           </DropboxProvider>
         </ThemeProvider>
