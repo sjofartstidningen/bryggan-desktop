@@ -1,3 +1,4 @@
+import { basename } from 'path';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useReady } from '../hooks';
 import { Header } from '../components/Header';
@@ -7,6 +8,7 @@ import { EmptyFolder } from '../components/EmptyFolder';
 import { Folder, File, IdFile } from '../components/FolderItem';
 import { Sticky } from '../components/Sticky';
 import { ContextMenu, ContextMenuItem } from '../components/ContextMenu';
+import { Loading } from '../components/Loading';
 import { useListFolder } from '../hooks/dropbox';
 import { sortByType } from '../utils';
 import { minutes } from '../../shared/time';
@@ -54,7 +56,7 @@ function FilePicker() {
 
   useEffect(
     () => {
-      const intervalId = setInterval(update, minutes(2).toMilliseconds());
+      const intervalId = setInterval(update, minutes(1).toMilliseconds());
       return () => clearInterval(intervalId);
     },
     [currentPath],
@@ -90,8 +92,12 @@ function FilePicker() {
       </ContextMenu>
 
       <main style={{ zIndex: 1 }}>
-        {state === 'initial' && <p>Loading</p>}
-        {state === 'fetching' && <p>Loading</p>}
+        {(state === 'initial' || state === 'fetching') && (
+          <Loading
+            threshold={500}
+            message={`Fetching ${basename(currentPath)}`}
+          />
+        )}
         {state === 'error' && <p>{error.message}</p>}
         {state === 'success' && (
           <FolderList

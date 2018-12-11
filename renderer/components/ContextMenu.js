@@ -30,7 +30,7 @@ const MenuToggleButton = styled.button`
   border: none;
   border-radius: 100%;
   padding: 0;
-  font-size: 0.75rem;
+  font-size: 1rem;
   color: rgb(153, 153, 153);
   background-color: transparent;
 

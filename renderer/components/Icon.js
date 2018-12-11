@@ -123,10 +123,14 @@ const FilledCircle = createIcon(() => (
 
 const ContextMenuIcon = createIcon(() => (
   <Fragment>
-    <circle fill="currentColor" cx="4" cy="12" r="2" />
-    <circle fill="currentColor" cx="12" cy="12" r="2" />
-    <circle fill="currentColor" cx="20" cy="12" r="2" />
+    <circle fill="currentColor" cx="12" cy="12" r="1" />
+    <circle fill="currentColor" cx="19" cy="12" r="1" />
+    <circle fill="currentColor" cx="5" cy="12" r="1" />
   </Fragment>
+));
+
+const Zap = createIcon(() => (
+  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
 ));
 
 export {
@@ -140,4 +144,5 @@ export {
   IconSvg,
   FilledCircle,
   ContextMenuIcon,
+  Zap,
 };
