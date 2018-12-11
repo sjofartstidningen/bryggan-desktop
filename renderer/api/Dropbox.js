@@ -42,6 +42,12 @@ const normalizeFolderContent = entries =>
     })
     .filter(Boolean);
 
+const normalizeAccountData = data => ({
+  id: data.account_id,
+  displayName: `${data.name.given_name} ${data.name.surname}`,
+  profilePhotoUrl: data.profile_photo_url,
+});
+
 const listFolderCache = createSimpleCache(minutes(1).toMilliseconds());
 
 async function listFolder(path, { apiKey, cancelToken, ignoreCache } = {}) {
@@ -91,12 +97,33 @@ async function getAccount(accountId, { apiKey, cancelToken, ignoreCache }) {
     getAccountCache.set(accountId, data);
   }
   return {
-    account: {
-      id: data.account_id,
-      displayName: data.name.display_name,
-      profilePhotoUrl: data.profile_photo_url,
-    },
+    account: normalizeAccountData(data),
   };
 }
 
-export { listFolderCache, listFolder, getAccountCache, getAccount };
+async function getCurrentAccount({ apiKey, cancelToken }) {
+  checkApiKey(apiKey);
+
+  const { data } = await axios.post(
+    'https://api.dropboxapi.com/2/users/get_current_account',
+    undefined,
+    {
+      headers: construcHeaders(apiKey),
+      cancelToken,
+    },
+  );
+
+  getAccountCache.set(data.account_id, data);
+
+  return {
+    account: normalizeAccountData(data),
+  };
+}
+
+export {
+  listFolderCache,
+  listFolder,
+  getAccountCache,
+  getAccount,
+  getCurrentAccount,
+};

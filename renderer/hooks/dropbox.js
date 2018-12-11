@@ -10,8 +10,6 @@ function useListFolder(initialPath = '/') {
   const [state, setState] = useState('initial');
 
   const listFolder = async ({ ignoreCache = false, cancelToken }) => {
-    setState('fetching');
-
     try {
       const { items } = await dropbox.listFolder(currentPath, {
         cancelToken,
@@ -31,6 +29,7 @@ function useListFolder(initialPath = '/') {
 
   useEffect(
     () => {
+      setState('fetching');
       const controller = CancelToken.source();
       listFolder({ ignoreCache: false, cancelToken: controller.token });
       return () => controller.cancel('Path updated or component unmounted');

@@ -1,6 +1,10 @@
 import axios from 'axios';
 import * as Dropbox from '../Dropbox';
-import { filesListFolder, getAccount } from '../../__fixtures__/Dropbox';
+import {
+  filesListFolder,
+  getAccount,
+  getCurrentAccount,
+} from '../../__fixtures__/Dropbox';
 
 jest.mock('axios');
 jest.mock('../../../shared/simple-cache.js');
@@ -119,5 +123,28 @@ describe('Api: Dropbox.getAccount', () => {
       ignoreCache: true,
     });
     expect(Dropbox.getAccountCache.get).not.toHaveBeenCalled();
+  });
+});
+
+describe('Api: Dropbox.getCurrentAccount', () => {
+  it('should throw if apiKey is not provided', async () => {
+    await expect(Dropbox.getCurrentAccount('accountId')).rejects.toThrow();
+  });
+
+  it('should return normalized information about an account', async () => {
+    axios.post.mockResolvedValue({ data: getCurrentAccount });
+
+    const { account } = await Dropbox.getCurrentAccount({
+      apiKey: 'apiKey',
+    });
+
+    const expectedShape = expect.objectContaining({
+      id: expect.any(String),
+      displayName: expect.any(String),
+      profilePhotoUrl: expect.any(String),
+    });
+
+    expect(account).toEqual(expectedShape);
+    expect(account).toMatchSnapshot();
   });
 });

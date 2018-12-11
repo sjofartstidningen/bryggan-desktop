@@ -8,6 +8,14 @@ Object {
 }
 `;
 
+exports[`Api: Dropbox.getCurrentAccount should return normalized information about an account 1`] = `
+Object {
+  "displayName": "Adam Bergman",
+  "id": "dbid:AACrh22Y3qGiQTCRwwE3IHv4GvbjqNoznG8",
+  "profilePhotoUrl": "https://dl-web.dropbox.com/account_photo/get/dbaphid%3AAAB-Yblu_z6W0CyArB8E-ymgpphnLEabMkk?size=128x128&vers=1460967974696",
+}
+`;
+
 exports[`Api: Dropbox.listFolder should return a normalized array of files and folders of the provided path 1`] = `
 Array [
   Object {

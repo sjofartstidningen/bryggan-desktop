@@ -269,4 +269,41 @@ const getAccount = {
   team_member_id: 'dbmid:AADhwrnyWESM_u0pImgwyWiB3lHn3ac4ioY',
 };
 
-export { filesListFolder, getAccount };
+const getCurrentAccount = {
+  account_id: 'dbid:AACrh22Y3qGiQTCRwwE3IHv4GvbjqNoznG8',
+  name: {
+    given_name: 'Adam',
+    surname: 'Bergman',
+    familiar_name: 'Adam',
+    display_name: 'Adam Bergman (Sj\u00f6fartstidningen)',
+    abbreviated_name: 'AB',
+  },
+  email: 'adam.bergman@sjofartstidningen.se',
+  email_verified: true,
+  profile_photo_url:
+    'https://dl-web.dropbox.com/account_photo/get/dbaphid%3AAAB-Yblu_z6W0CyArB8E-ymgpphnLEabMkk?size=128x128&vers=1460967974696',
+  disabled: false,
+  country: 'SE',
+  locale: 'sv-SE',
+  referral_link: 'https://db.tt/NGVu5e5uK1',
+  team: {
+    id: 'dbtid:AADbFdmDgcSCo5WQ6MesF_q59ltpbjw1lms',
+    name: 'Sj\u00f6fartstidningen',
+    sharing_policies: {
+      shared_folder_member_policy: { '.tag': 'anyone' },
+      shared_folder_join_policy: { '.tag': 'from_anyone' },
+      shared_link_create_policy: { '.tag': 'default_public' },
+    },
+    office_addin_policy: { '.tag': 'enabled' },
+  },
+  team_member_id: 'dbmid:AADhwrnyWESM_u0pImgwyWiB3lHn3ac4ioY',
+  is_paired: true,
+  account_type: { '.tag': 'business' },
+  root_info: {
+    '.tag': 'user',
+    root_namespace_id: '1194401041',
+    home_namespace_id: '1194401041',
+  },
+};
+
+export { filesListFolder, getAccount, getCurrentAccount };

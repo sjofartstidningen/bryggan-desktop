@@ -8,6 +8,7 @@ import { Folder, File, IdFile } from '../components/FolderItem';
 import { Sticky } from '../components/Sticky';
 import { useListFolder } from '../hooks/dropbox';
 import { sortByType } from '../utils';
+import { minutes } from '../../shared/time';
 
 const filterRelevant = showAll => item =>
   showAll || item.type === 'folder' || item.name.endsWith('.indd');
@@ -36,16 +37,27 @@ function FilePicker() {
     ipc.callMain('open-id-file', { path });
   };
 
-  useEffect(() => {
-    const onKeypress = e => {
-      if (e.keyCode === 114) {
-        e.preventDefault();
-        update();
-      }
-    };
-    window.addEventListener('keypress', onKeypress);
-    return () => window.removeEventListener('keypress', onKeypress);
-  }, []);
+  useEffect(
+    () => {
+      const onKeypress = e => {
+        if (e.keyCode === 114) {
+          e.preventDefault();
+          update();
+        }
+      };
+      window.addEventListener('keypress', onKeypress);
+      return () => window.removeEventListener('keypress', onKeypress);
+    },
+    [currentPath],
+  );
+
+  useEffect(
+    () => {
+      const intervalId = setInterval(update, minutes(2).toMilliseconds());
+      return () => clearInterval(intervalId);
+    },
+    [currentPath],
+  );
 
   return (
     <div>
