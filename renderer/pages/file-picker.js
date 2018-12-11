@@ -115,7 +115,7 @@ function FilePicker() {
                 onClick={onIdFileClick(file.path)}
               />
             )}
-            renderEmpty={() => <EmptyFolder />}
+            renderEmpty={() => <Loading message="No relevant files" />}
           />
         )}
       </main>
