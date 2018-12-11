@@ -11,7 +11,8 @@ import { store } from './store';
  * REMOVE THIS LATER WHEN
  * SIGN IN PROESS IS SETUP...
  */
-store.set('dropboxApiKey', process.env.DROPBOX_API_KEY);
+store.delete('dropboxApiKey');
+// store.set('dropboxApiKey', process.env.DROPBOX_API_KEY);
 
 const getWindowConfig = () => ({
   page: store.has('dropboxApiKey') ? 'file-picker' : 'sign-in',
