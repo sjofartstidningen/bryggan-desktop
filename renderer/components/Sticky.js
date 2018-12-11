@@ -8,6 +8,8 @@ const StickyWrapper = styled.div`
 `;
 
 const Sentinel = styled.div`
+  position: absolute;
+  top: calc(var(--electron-safe-inset) / -2);
   height: 0;
   width: 0;
 `;
@@ -55,8 +57,8 @@ function Sticky({ as, children, ...props }) {
 
   return (
     <Fragment>
-      <Sentinel ref={sentinel} />
       <StickyWrapper {...props} className={sticky && 'sticky'} as={as}>
+        <Sentinel ref={sentinel} />
         {children}
       </StickyWrapper>
     </Fragment>
