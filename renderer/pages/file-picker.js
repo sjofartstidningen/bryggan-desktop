@@ -10,6 +10,8 @@ import { Loading } from '../components/Loading';
 import { useListFolder } from '../hooks/dropbox';
 import { sortByType } from '../utils';
 import { minutes } from '../../shared/time';
+import { useCallMain } from '../hooks/ipc';
+import { callMain } from '../utils/ipc';
 
 const filterRelevant = showAll => item =>
   showAll || item.type === 'folder' || item.name.endsWith('.indd');
@@ -26,16 +28,10 @@ function FilePicker({ initialPath }) {
   );
 
   const onFolderClick = path => () => goToPath(path);
+  const onFileClick = path => () => callMain('open-file', { path });
+  const onIdFileClick = path => () => callMain('open-id-file', { path });
 
-  const onFileClick = path => () => {
-    const ipc = require('electron-better-ipc');
-    ipc.callMain('open-file', { path });
-  };
-
-  const onIdFileClick = path => () => {
-    const ipc = require('electron-better-ipc');
-    ipc.callMain('open-id-file', { path });
-  };
+  useCallMain('dropbox-path-updated', { path: currentPath }, [currentPath]);
 
   useEffect(
     () => {
@@ -45,6 +41,7 @@ function FilePicker({ initialPath }) {
           update();
         }
       };
+
       window.addEventListener('keypress', onKeypress);
       return () => window.removeEventListener('keypress', onKeypress);
     },

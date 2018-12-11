@@ -13,7 +13,7 @@ class App extends NextApp {
 
   render() {
     const { Component, pageProps, router } = this.props;
-    const { dropboxApiKey, initialPath } = router.query;
+    const { dropboxApiKey } = router.query;
 
     return (
       <Container>
@@ -22,7 +22,7 @@ class App extends NextApp {
             <Fragment>
               <GlobalStyle />
               <DraggableArea />
-              <Component {...pageProps} initialPath={initialPath} />
+              <Component {...pageProps} {...router.query} />
             </Fragment>
           </DropboxProvider>
         </ThemeProvider>

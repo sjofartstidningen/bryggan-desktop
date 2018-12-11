@@ -1,4 +1,5 @@
 import { BrowserWindow } from 'electron';
+import windowStateKeeper from 'electron-window-state';
 import { is } from 'electron-util';
 import { windows } from './utils/window-cache';
 import * as routes from './utils/routes';
@@ -7,11 +8,17 @@ import { waitForRenderer } from './utils/ipc';
 const name = 'main-window';
 
 const initialize = async ({ page, query } = {}) => {
+  const mainWindowState = windowStateKeeper({
+    defaultWidth: 300,
+    defaultHeight: 400,
+  });
+
   const win = new BrowserWindow({
     show: false,
-    width: 300,
-    height: 350,
-    center: true,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
     title: 'Bryggan',
     titleBarStyle: 'hiddenInset',
     frame: false,
@@ -26,6 +33,7 @@ const initialize = async ({ page, query } = {}) => {
     },
   });
 
+  mainWindowState.manage(win);
   windows.set(name, win);
   win.on('close', () => windows.delete(name));
 
@@ -36,6 +44,7 @@ const initialize = async ({ page, query } = {}) => {
       query,
       devtools: is.development,
     });
+
     await waitForRenderer(`${name}-ready`);
   }
 
@@ -54,12 +63,12 @@ const loadRoute = async ({ page, query } = {}) => {
   }
 };
 
-const show = async ({ page } = {}) => {
+const show = async config => {
   if (windows.has(name)) {
     const win = windows.get(name);
     win.show();
   } else {
-    const win = await initialize({ page });
+    const win = await initialize(config);
     win.show();
   }
 };
