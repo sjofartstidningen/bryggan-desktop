@@ -6,6 +6,7 @@ import { FolderList } from '../components/FolderList';
 import { EmptyFolder } from '../components/EmptyFolder';
 import { Folder, File, IdFile } from '../components/FolderItem';
 import { Sticky } from '../components/Sticky';
+import { ContextMenu, ContextMenuItem } from '../components/ContextMenu';
 import { useListFolder } from '../hooks/dropbox';
 import { sortByType } from '../utils';
 import { minutes } from '../../shared/time';
@@ -74,17 +75,19 @@ function FilePicker() {
         </nav>
       </Sticky>
 
-      <div>
-        <label htmlFor="cb-show-all">
-          <input
-            type="checkbox"
-            id="cb-show-all"
-            checked={showAll}
-            onChange={() => setShowAll(!showAll)}
-          />
-          <span>Show all files</span>
-        </label>
-      </div>
+      <ContextMenu zIndex={4}>
+        <ContextMenuItem>
+          <label htmlFor="cb-show-all">
+            <input
+              type="checkbox"
+              id="cb-show-all"
+              checked={showAll}
+              onChange={() => setShowAll(!showAll)}
+            />
+            <span>Show all files</span>
+          </label>
+        </ContextMenuItem>
+      </ContextMenu>
 
       <main style={{ zIndex: 1 }}>
         {state === 'initial' && <p>Loading</p>}

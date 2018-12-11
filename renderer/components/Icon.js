@@ -121,6 +121,14 @@ const FilledCircle = createIcon(() => (
   <circle fill="currentColor" cx="12" cy="12" r="10" />
 ));
 
+const ContextMenuIcon = createIcon(() => (
+  <Fragment>
+    <circle fill="currentColor" cx="4" cy="12" r="2" />
+    <circle fill="currentColor" cx="12" cy="12" r="2" />
+    <circle fill="currentColor" cx="20" cy="12" r="2" />
+  </Fragment>
+));
+
 export {
   Icon,
   Home,
@@ -131,4 +139,5 @@ export {
   IconWrapper,
   IconSvg,
   FilledCircle,
+  ContextMenuIcon,
 };

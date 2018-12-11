@@ -6,7 +6,7 @@ const DraggableArea = styled.div`
   left: 0;
   width: 100vw;
   height: var(--electron-safe-inset, 0px);
-  z-index: 5;
+  z-index: 3;
   pointer-events: none;
   app-region: drag;
 `;

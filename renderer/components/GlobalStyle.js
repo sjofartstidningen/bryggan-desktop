@@ -144,6 +144,7 @@ const GlobalStyle = createGlobalStyle`
   *::after {
     position: relative;
     box-sizing: border-box;
+    user-select: none;
   }
 
   body {

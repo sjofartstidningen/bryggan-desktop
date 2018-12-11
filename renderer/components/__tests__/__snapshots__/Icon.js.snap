@@ -1,5 +1,63 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Component: <Icon.ContextMenuIcon /> should render without issues 1`] = `
+.c0 {
+  position: relative;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-align-self: center;
+  -ms-flex-item-align: center;
+  align-self: center;
+  width: 1em;
+  height: 1em;
+}
+
+.c1 {
+  width: 1em;
+  height: 1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  position: absolute;
+  bottom: -0.125em;
+}
+
+<span
+  class="c0"
+>
+  <svg
+    class="c1"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle
+      cx="4"
+      cy="12"
+      fill="currentColor"
+      r="2"
+    />
+    <circle
+      cx="12"
+      cy="12"
+      fill="currentColor"
+      r="2"
+    />
+    <circle
+      cx="20"
+      cy="12"
+      fill="currentColor"
+      r="2"
+    />
+  </svg>
+</span>
+`;
+
 exports[`Component: <Icon.File /> should render without issues 1`] = `
 .c0 {
   position: relative;
