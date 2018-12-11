@@ -57,6 +57,11 @@ const IndicatorWrapper = styled.span`
     canAccess ? rgb(52, 199, 73) : rgb(252, 96, 92)};
 `;
 
+const FileName = styled.p``;
+const ModifiedBy = styled.p`
+  color: rgb(153, 153, 153);
+`;
+
 function Folder({ file, onClick }) {
   return (
     <Wrapper>
@@ -64,7 +69,9 @@ function Folder({ file, onClick }) {
         <IconWrapper aria-hidden="true">
           <FolderIcon />
         </IconWrapper>
-        <span>{file.name}</span>
+        <div>
+          <FileName>{file.name}</FileName>
+        </div>
       </Button>
     </Wrapper>
   );
@@ -77,7 +84,9 @@ function File({ file, onClick }) {
         <IconWrapper aria-hidden="true">
           <FileIcon />
         </IconWrapper>
-        <span>{file.name}</span>
+        <div>
+          <FileName>{file.name}</FileName>
+        </div>
       </Button>
     </Wrapper>
   );
@@ -93,10 +102,10 @@ function IdFile({ file, folderContent, onClick }) {
           <IdIcon />
         </IconWrapper>
         <div>
-          <p>{file.name}</p>
-          <p>
+          <FileName>{file.name}</FileName>
+          <ModifiedBy>
             Last modified by: <DisplayName accountId={file.modifiedBy} />
-          </p>
+          </ModifiedBy>
         </div>
         <IndicatorWrapper canAccess={canAccess}>
           <FilledCircle />
