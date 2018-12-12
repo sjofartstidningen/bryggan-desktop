@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import log from 'electron-log';
 
 const useInterval = (fn, ms, when) => {
   useEffect(() => {
@@ -18,4 +19,18 @@ const useWindowKeypress = (keyCode, fn, when) => {
   useWindowEvent('keypress', e => e.keyCode === keyCode && fn(), when);
 };
 
-export { useInterval, useWindowEvent, useWindowKeypress };
+const useLog = (level, mountMessage, unmountMessage, when) => {
+  useEffect(() => {
+    if (mountMessage) {
+      log[level](mountMessage);
+    }
+
+    if (unmountMessage) {
+      return () => {
+        log[level](unmountMessage);
+      };
+    }
+  }, when);
+};
+
+export { useInterval, useWindowEvent, useWindowKeypress, useLog };

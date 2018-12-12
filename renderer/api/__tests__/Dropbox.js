@@ -7,6 +7,7 @@ import {
 } from '../../__fixtures__/Dropbox';
 
 jest.mock('axios');
+jest.mock('electron-log');
 jest.mock('../../../shared/simple-cache.js');
 
 afterEach(() => {

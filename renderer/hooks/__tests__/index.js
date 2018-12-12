@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { render, flushEffects } from 'react-testing-library';
+import log from 'electron-log';
 import * as hooks from '../';
+
+jest.mock('electron-log');
 
 describe('Hook: useInterval', () => {
   it('should trigger an interval', async () => {
@@ -55,5 +58,22 @@ describe('Hook: useWindowKeypress', () => {
 
     window.dispatchEvent(new KeyboardEvent('keypress', { keyCode: 114 }));
     expect(getByText(/key pressed/)).toBeInTheDocument();
+  });
+});
+
+describe('Hook: useLog', () => {
+  it('should call electron-log on useEffect', async () => {
+    const Component = () => {
+      hooks.useLog('info', 'mount message', 'unmount message', []);
+      return null;
+    };
+
+    const { unmount } = render(<Component />);
+    flushEffects();
+
+    unmount();
+    flushEffects();
+
+    expect(log.info).toHaveBeenCalledTimes(2);
   });
 });

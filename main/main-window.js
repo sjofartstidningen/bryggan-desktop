@@ -1,6 +1,7 @@
 import { BrowserWindow } from 'electron';
 import windowStateKeeper from 'electron-window-state';
 import { is } from 'electron-util';
+import log from 'electron-log';
 import { windows } from './utils/window-cache';
 import * as routes from './utils/routes';
 import { waitForRenderer } from './utils/ipc';
@@ -48,6 +49,7 @@ const initialize = async ({ page, query } = {}) => {
     await waitForRenderer(`${name}-ready`);
   }
 
+  log.info(`Main window initialized on page ${page}`);
   return win;
 };
 
@@ -67,6 +69,7 @@ const show = async config => {
   if (windows.has(name)) {
     const win = windows.get(name);
     win.show();
+    log.verbose('Main window shown');
   } else {
     const win = await initialize(config);
     win.show();

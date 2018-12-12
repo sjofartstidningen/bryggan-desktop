@@ -1,6 +1,35 @@
 import axios from 'axios';
+import log from 'electron-log';
 import { createSimpleCache } from '../../shared/simple-cache';
 import { minutes, days } from '../../shared/time';
+
+function logWrapper(endpoint, fn) {
+  return async (...args) => {
+    try {
+      const result = await fn(...args);
+      return result;
+    } catch (error) {
+      if (error.response) {
+        let reason;
+
+        if (error.response.status === 409) {
+          reason =
+            error.response.data.user_message ||
+            error.response.data.error_summary ||
+            error.response.data.error;
+        } else {
+          reason = error.response.statusText;
+        }
+
+        log.error(`${endpoint}: Failed request because: ${reason}`);
+      } else {
+        log.error(`${endpoint}: Failed request: ${error.message}`);
+      }
+
+      throw error;
+    }
+  };
+}
 
 const checkAccessToken = accessToken => {
   if (typeof accessToken !== 'string') {
@@ -50,102 +79,108 @@ const normalizeAccountData = data => ({
 
 const listFolderCache = createSimpleCache(minutes(1).toMilliseconds());
 
-async function listFolder(
-  path,
-  { accessToken, cancelToken, ignoreCache } = {},
-) {
-  checkAccessToken(accessToken);
+const listFolder = logWrapper(
+  '/list_folder',
+  async (path, { accessToken, cancelToken, ignoreCache } = {}) => {
+    checkAccessToken(accessToken);
 
-  let data;
+    let data;
 
-  if (!ignoreCache && listFolderCache.has(path)) {
-    data = listFolderCache.get(path);
-  } else {
-    const response = await axios.post(
-      'https://api.dropboxapi.com/2/files/list_folder',
-      { path: path === '/' ? '' : path },
-      {
-        headers: constructHeaders(accessToken),
-        cancelToken,
-      },
-    );
+    if (!ignoreCache && listFolderCache.has(path)) {
+      data = listFolderCache.get(path);
+    } else {
+      const response = await axios.post(
+        'https://api.dropboxapi.com/2/files/list_folder',
+        { path: path === '/' ? '' : path },
+        {
+          headers: constructHeaders(accessToken),
+          cancelToken,
+        },
+      );
 
-    data = response.data;
-    listFolderCache.set(path, data);
-  }
+      data = response.data;
+      listFolderCache.set(path, data);
+    }
 
-  return { items: normalizeFolderContent(data.entries) };
-}
+    return { items: normalizeFolderContent(data.entries) };
+  },
+);
 
 const getAccountCache = createSimpleCache(days(1).toMilliseconds());
 
-async function getAccount(
-  accountId,
-  { accessToken, cancelToken, ignoreCache },
-) {
-  checkAccessToken(accessToken);
+const getAccount = logWrapper(
+  '/get_account',
+  async (accountId, { accessToken, cancelToken, ignoreCache }) => {
+    checkAccessToken(accessToken);
 
-  let data;
+    let data;
 
-  if (!ignoreCache && getAccountCache.has(accountId)) {
-    data = getAccountCache.get(accountId);
-  } else {
-    const response = await axios.post(
-      'https://api.dropboxapi.com/2/users/get_account',
-      { account_id: accountId },
+    if (!ignoreCache && getAccountCache.has(accountId)) {
+      data = getAccountCache.get(accountId);
+    } else {
+      const response = await axios.post(
+        'https://api.dropboxapi.com/2/users/get_account',
+        { account_id: accountId },
+        {
+          headers: constructHeaders(accessToken),
+          cancelToken,
+        },
+      );
+
+      data = response.data;
+      getAccountCache.set(accountId, data);
+    }
+    return {
+      account: normalizeAccountData(data),
+    };
+  },
+);
+
+const getCurrentAccount = logWrapper(
+  '/get_current_account',
+  async ({ accessToken, cancelToken }) => {
+    checkAccessToken(accessToken);
+
+    const { data } = await axios.post(
+      'https://api.dropboxapi.com/2/users/get_current_account',
+      undefined,
       {
         headers: constructHeaders(accessToken),
         cancelToken,
       },
     );
 
-    data = response.data;
-    getAccountCache.set(accountId, data);
-  }
-  return {
-    account: normalizeAccountData(data),
-  };
-}
+    getAccountCache.set(data.account_id, data);
 
-async function getCurrentAccount({ accessToken, cancelToken }) {
-  checkAccessToken(accessToken);
+    return {
+      account: normalizeAccountData(data),
+    };
+  },
+);
 
-  const { data } = await axios.post(
-    'https://api.dropboxapi.com/2/users/get_current_account',
-    undefined,
-    {
-      headers: constructHeaders(accessToken),
-      cancelToken,
-    },
-  );
-
-  getAccountCache.set(data.account_id, data);
-
-  return {
-    account: normalizeAccountData(data),
-  };
-}
-
-async function getToken({ code, clientId, clientSecret }) {
-  const { data } = await axios.post(
-    'https://api.dropboxapi.com/oauth2/token',
-    undefined,
-    {
-      params: {
-        code,
-        grant_type: 'authorization_code',
+const getToken = logWrapper(
+  '/token',
+  async ({ code, clientId, clientSecret }) => {
+    const { data } = await axios.post(
+      'https://api.dropboxapi.com/oauth2/token',
+      undefined,
+      {
+        params: {
+          code,
+          grant_type: 'authorization_code',
+        },
+        auth: {
+          username: clientId,
+          password: clientSecret,
+        },
       },
-      auth: {
-        username: clientId,
-        password: clientSecret,
-      },
-    },
-  );
+    );
 
-  return { accessToken: data.access_token };
-}
+    return { accessToken: data.access_token };
+  },
+);
 
-async function revokeToken({ accessToken }) {
+const revokeToken = logWrapper('/revoke', async ({ accessToken }) => {
   await axios.post(
     'https://api.dropboxapi.com/2/auth/token/revoke',
     undefined,
@@ -153,7 +188,7 @@ async function revokeToken({ accessToken }) {
       headers: constructHeaders(accessToken),
     },
   );
-}
+});
 
 export {
   listFolderCache,
