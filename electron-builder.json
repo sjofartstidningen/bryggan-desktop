@@ -2,7 +2,7 @@
   "appId": "com.sjofartstidninen.bryggan.com",
   "productName": "Bryggan",
   "copyright": "Copyright © 2018 Sjöfartstidningen",
-  "files": ["main", "renderer/out", "static"],
+  "files": ["main", "renderer/out", "static", "shared"],
   "fileAssociations": [
     {
       "ext": "indd",

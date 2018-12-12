@@ -8,6 +8,7 @@ import { DropboxContext } from '../context/Dropbox';
 import { Header } from '../components/Header';
 import { Loading } from '../components/Loading';
 import { callMain } from '../utils/ipc';
+import env from '../../shared/env-config';
 
 const Section = styled.div`
   position: absolute;
@@ -105,7 +106,7 @@ function SignIn() {
   const onAuthorizeClick = () => {
     const query = qs.stringify({
       response_type: 'code',
-      client_id: process.env.DROPBOX_APP_KEY,
+      client_id: env.DROPBOX_APP_KEY,
       require_role: 'work',
       disable_signup: true,
     });
@@ -126,8 +127,8 @@ function SignIn() {
       setPage('loading');
       const { accessToken } = await dropbox.getToken({
         code,
-        clientId: process.env.DROPBOX_APP_KEY,
-        clientSecret: process.env.DROPBOX_APP_SECRET,
+        clientId: env.DROPBOX_APP_KEY,
+        clientSecret: env.DROPBOX_APP_SECRET,
       });
 
       await callMain('dropbox-authorized', { accessToken });
