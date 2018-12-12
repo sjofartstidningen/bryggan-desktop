@@ -8,17 +8,7 @@ import {
 } from './utils/open';
 
 function setupListeners() {
-  ipc.answerRenderer('get-state', async ({ keys }) => {
-    const state = keys.reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]: store.get(key),
-      }),
-      {},
-    );
-
-    return state;
-  });
+  ipc.answerRenderer('get-state', async () => store.store);
 
   ipc.answerRenderer('open-folder', async ({ path }) => {
     try {

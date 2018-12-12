@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import axios, { CancelToken } from 'axios';
 import { DropboxContext } from '../context/Dropbox';
 
-function useListFolder(initialPath = '/') {
+function useListFolder(initialPath = null) {
   const dropbox = useContext(DropboxContext);
   const [currentPath, setPath] = useState(initialPath);
   const [items, setItems] = useState([]);
@@ -29,12 +29,14 @@ function useListFolder(initialPath = '/') {
 
   useEffect(
     () => {
-      setState('fetching');
-      const controller = CancelToken.source();
-      listFolder({ ignoreCache: false, cancelToken: controller.token });
-      return () => controller.cancel('Path updated or component unmounted');
+      if (currentPath && dropbox.accessToken) {
+        setState('fetching');
+        const controller = CancelToken.source();
+        listFolder({ ignoreCache: false, cancelToken: controller.token });
+        return () => controller.cancel('Path updated or component unmounted');
+      }
     },
-    [currentPath],
+    [currentPath, dropbox],
   );
 
   const goToPath = nextPath => setPath(nextPath);

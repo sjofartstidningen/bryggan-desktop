@@ -30,6 +30,7 @@ const initialize = async ({ page, query } = {}) => {
     maximizable: false,
     fullscreenable: false,
     webPreferences: {
+      webSecurity: false,
       preload: join(app.getAppPath(), 'main/preload.js'),
       devTools: is.development,
     },

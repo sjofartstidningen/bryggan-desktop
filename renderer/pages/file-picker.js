@@ -1,5 +1,4 @@
-import { basename } from 'path';
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useEffect, useState, useMemo, useContext } from 'react';
 import Router from 'next/router';
 import { DropboxContext } from '../context/Dropbox';
 import { Header } from '../components/Header';
@@ -20,7 +19,7 @@ import { callMain } from '../utils/ipc';
 const filterRelevant = showAll => item =>
   showAll || item.type === 'folder' || item.name.endsWith('.indd');
 
-function FilePicker({ initialPath, showAllFiles }) {
+function FilePicker({ showAllFiles }) {
   const dropbox = useContext(DropboxContext);
   const [showAll, setShowAll] = useState(() =>
     showAllFiles === 'true' ? true : false,
@@ -34,7 +33,16 @@ function FilePicker({ initialPath, showAllFiles }) {
     goToPath,
     update,
     setState,
-  } = useListFolder(initialPath);
+  } = useListFolder();
+
+  useEffect(() => {
+    callMain('get-state', { keys: ['showAllFiles', 'initialPath'] }).then(
+      ({ showAllFiles, initialPath }) => {
+        setShowAll(showAllFiles || false);
+        goToPath(initialPath || '/');
+      },
+    );
+  }, []);
 
   const filteredItems = useMemo(
     () => items.filter(filterRelevant(showAll)).sort(sortByType),
@@ -73,7 +81,7 @@ function FilePicker({ initialPath, showAllFiles }) {
       <Sticky as="section" style={{ zIndex: 2 }}>
         <nav>
           <Breadcrumbs
-            currentPath={currentPath}
+            currentPath={currentPath || '/'}
             onPathClick={({ path }) => goToPath(path)}
           />
         </nav>
@@ -110,10 +118,7 @@ function FilePicker({ initialPath, showAllFiles }) {
 
       <main style={{ zIndex: 1 }}>
         {(state === 'initial' || state === 'fetching') && (
-          <Loading
-            threshold={500}
-            message={`Fetching ${basename(currentPath)}`}
-          />
+          <Loading threshold={500} message={'Fetching'} />
         )}
         {state === 'error' && <p>{error.message}</p>}
         {state === 'success' && (

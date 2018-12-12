@@ -1,21 +1,24 @@
 import React, { createContext, useMemo, useState, useEffect } from 'react';
 import * as Dropbox from '../api/Dropbox';
+import { callMain } from '../utils/ipc';
 
 const DropboxContext = createContext();
 
-function Provider({ accessToken: initialAccessToken, children }) {
-  const [accessToken, setAccessToken] = useState(() => initialAccessToken);
+function Provider({ children }) {
+  const [accessToken, setAccessToken] = useState(null);
   const [currentAccount, setCurrentAccount] = useState({});
 
+  useEffect(() => {
+    callMain('get-state').then(({ dropboxAccessToken }) => {
+      setAccessToken(dropboxAccessToken);
+    });
+  }, []);
+
   const listFolder = (path, { cancelToken, ignoreCache } = {}) => {
-    if (!accessToken)
-      throw new Error('Access token is required before using the api');
     return Dropbox.listFolder(path, { accessToken, cancelToken, ignoreCache });
   };
 
   const getAccount = (accountId, { cancelToken, ignoreCache } = {}) => {
-    if (!accessToken)
-      throw new Error('Access token is required before using the api');
     return Dropbox.getAccount(accountId, {
       accessToken,
       cancelToken,
@@ -24,8 +27,6 @@ function Provider({ accessToken: initialAccessToken, children }) {
   };
 
   const getCurrentAccount = ({ cancelToken } = {}) => {
-    if (!accessToken)
-      throw new Error('Access token is required before using the api');
     return Dropbox.getCurrentAccount({ accessToken, cancelToken });
   };
 
@@ -40,8 +41,6 @@ function Provider({ accessToken: initialAccessToken, children }) {
   };
 
   const revokeToken = async () => {
-    if (!accessToken)
-      throw new Error('App is not authorized, so no token to revoke');
     await Dropbox.revokeToken({ accessToken });
     setAccessToken(undefined);
   };
@@ -49,7 +48,6 @@ function Provider({ accessToken: initialAccessToken, children }) {
   useEffect(
     () => {
       if (accessToken) {
-        console.log({ accessToken });
         getCurrentAccount()
           .then(({ account }) => setCurrentAccount(account))
           .catch(() => {});
@@ -61,6 +59,7 @@ function Provider({ accessToken: initialAccessToken, children }) {
   const contextValue = useMemo(
     () => ({
       accessToken,
+      setAccessToken,
       currentAccount,
       listFolder,
       getAccount,

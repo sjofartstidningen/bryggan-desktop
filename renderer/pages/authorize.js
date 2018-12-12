@@ -132,11 +132,7 @@ function Authorize() {
       });
 
       await callMain('dropbox-authorized', { accessToken });
-
-      Router.push({
-        pathname: '/file-picker',
-        query: { accessToken, initialPath: '/' },
-      });
+      Router.push('/file-picker');
     } catch (error) {
       setError(
         new Error('Could not authorize. Maybe the code is not properly pasted'),

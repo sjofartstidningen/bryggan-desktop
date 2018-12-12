@@ -7,6 +7,7 @@
   "scripts": {
     "test": "jest --env=jsdom",
     "start": "electron .",
+    "start:prod": "yarn build && ELECTRON_IS_DEV=0 yarn start",
     "watch": "nodemon --exec 'yarn start' --watch main --watch shared",
     "build": "next build renderer && next export renderer",
     "dist": "yarn run build && build",

@@ -16,17 +16,16 @@ class App extends NextApp {
   }
 
   render() {
-    const { Component, pageProps, router } = this.props;
-    const { accessToken } = router.query;
+    const { Component, pageProps } = this.props;
 
     return (
       <Container>
         <ThemeProvider theme={theme}>
-          <DropboxProvider accessToken={accessToken}>
+          <DropboxProvider>
             <Fragment>
               <GlobalStyle />
               <DraggableArea />
-              <Component {...pageProps} {...router.query} />
+              <Component {...pageProps} />
             </Fragment>
           </DropboxProvider>
         </ThemeProvider>
