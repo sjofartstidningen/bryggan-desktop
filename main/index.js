@@ -10,7 +10,7 @@ import { parallell } from './utils/promise';
 import { store } from './store';
 import { setupExceptionHandler } from '../shared/exception-handler';
 
-log.transports.file.level = is.development ? 'verbose' : 'info';
+log.transports.file.level = is.development ? false : 'info';
 log.info('---New execution---');
 
 setupExceptionHandler(is.development);
