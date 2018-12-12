@@ -1,4 +1,5 @@
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron';
+import { join } from 'path';
 import windowStateKeeper from 'electron-window-state';
 import { is } from 'electron-util';
 import log from 'electron-log';
@@ -29,6 +30,7 @@ const initialize = async ({ page, query } = {}) => {
     maximizable: false,
     fullscreenable: false,
     webPreferences: {
+      preload: join(app.getAppPath(), 'main/preload.js'),
       devTools: is.development,
     },
   });
