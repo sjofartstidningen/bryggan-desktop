@@ -14,4 +14,8 @@ const useWindowEvent = (event, fn, when) => {
   }, when);
 };
 
-export { useInterval, useWindowEvent };
+const useWindowKeypress = (keyCode, fn, when) => {
+  useWindowEvent('keypress', e => e.keyCode === keyCode && fn(), when);
+};
+
+export { useInterval, useWindowEvent, useWindowKeypress };

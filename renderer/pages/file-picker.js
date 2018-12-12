@@ -14,7 +14,7 @@ import { useListFolder } from '../hooks/dropbox';
 import { sortByType } from '../utils';
 import { minutes } from '../../shared/time';
 import { useCallMain } from '../hooks/ipc';
-import { useInterval, useWindowEvent } from '../hooks';
+import { useInterval, useWindowEvent, useWindowKeypress } from '../hooks';
 import { callMain } from '../utils/ipc';
 
 const filterRelevant = showAll => item =>
@@ -48,7 +48,8 @@ function FilePicker({ initialPath, showAllFiles }) {
   useCallMain('dropbox-path-updated', { path: currentPath }, [currentPath]);
   useCallMain('show-all-files-updated', { showAllFiles: showAll }, [showAll]);
   useInterval(update, minutes(1).toMilliseconds(), [currentPath]);
-  useWindowEvent('keypress', e => e.keyCode === 114 && update(), [currentPath]);
+  useWindowKeypress(114, update, [currentPath]);
+  useWindowEvent('focus', update, [currentPath]);
 
   const onSignOutClick = async () => {
     try {
