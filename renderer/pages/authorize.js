@@ -1,10 +1,10 @@
 import { shell } from 'electron';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Router from 'next/router';
 import styled, { css } from 'styled-components';
 import qs from 'qs';
-import axios from 'axios';
 import { borderRadius } from 'polished';
+import { DropboxContext } from '../context/Dropbox';
 import { Header } from '../components/Header';
 import { Loading } from '../components/Loading';
 import { callMain } from '../utils/ipc';
@@ -95,6 +95,7 @@ const Input = styled.input`
 `;
 
 function SignIn() {
+  const dropbox = useContext(DropboxContext);
   const [page, setPage] = useState('authorize');
   const [code, setCode] = useState('');
   const [error, setError] = useState(null);
@@ -113,24 +114,17 @@ function SignIn() {
   const onSignInClick = async () => {
     try {
       setPage('loading');
-      const { data } = await axios({
-        method: 'post',
-        url: 'https://api.dropboxapi.com/oauth2/token',
-        params: {
-          code,
-          grant_type: 'authorization_code',
-          client_id: process.env.DROPBOX_APP_KEY,
-          client_secret: process.env.DROPBOX_APP_SECRET,
-        },
+      const { accessToken } = await dropbox.getToken({
+        code,
+        clientId: process.env.DROPBOX_APP_KEY,
+        clientSecret: process.env.DROPBOX_APP_SECRET,
       });
 
-      await callMain('dropbox-authorized', {
-        accessToken: data.access_token,
-      });
+      await callMain('dropbox-authorized', { accessToken });
 
       Router.push({
         pathname: '/file-picker',
-        query: { accessToken: data.access_token, initialPath: '/' },
+        query: { accessToken, initialPath: '/' },
       });
     } catch (error) {
       setError(

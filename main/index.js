@@ -7,15 +7,8 @@ import { setupListeners } from './events';
 import { parallell } from './utils/promise';
 import { store } from './store';
 
-/**
- * REMOVE THIS LATER WHEN
- * SIGN IN PROESS IS SETUP...
- */
-store.clear();
-// store.set('dropboxAccessToken', process.env.DROPBOX_ACCESS_TOKEN);
-
 const getWindowConfig = () => ({
-  page: store.has('dropboxAccessToken') ? 'file-picker' : 'sign-in',
+  page: store.has('dropboxAccessToken') ? 'file-picker' : 'authorize',
   query: {
     accessToken: store.get('dropboxAccessToken'),
     initialPath: store.get('initialPath', '/'),

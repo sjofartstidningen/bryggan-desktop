@@ -3,7 +3,8 @@ import * as Dropbox from '../api/Dropbox';
 
 const DropboxContext = createContext();
 
-function Provider({ accessToken, children }) {
+function Provider({ accessToken: initialAccessToken, children }) {
+  const [accessToken, setAccessToken] = useState(() => initialAccessToken);
   const [currentAccount, setCurrentAccount] = useState({});
 
   const listFolder = (path, { cancelToken, ignoreCache } = {}) => {
@@ -28,6 +29,23 @@ function Provider({ accessToken, children }) {
     return Dropbox.getCurrentAccount({ accessToken, cancelToken });
   };
 
+  const getToken = async ({ code, clientId, clientSecret }) => {
+    const { accessToken } = await Dropbox.getToken({
+      code,
+      clientId,
+      clientSecret,
+    });
+    setAccessToken(accessToken);
+    return { accessToken };
+  };
+
+  const revokeToken = async () => {
+    if (!accessToken)
+      throw new Error('App is not authorized, so no token to revoke');
+    await Dropbox.revokeToken({ accessToken });
+    setAccessToken(undefined);
+  };
+
   useEffect(
     () => {
       if (accessToken) {
@@ -40,7 +58,15 @@ function Provider({ accessToken, children }) {
   );
 
   const contextValue = useMemo(
-    () => ({ currentAccount, listFolder, getAccount, getCurrentAccount }),
+    () => ({
+      accessToken,
+      currentAccount,
+      listFolder,
+      getAccount,
+      getCurrentAccount,
+      getToken,
+      revokeToken,
+    }),
     [accessToken, currentAccount],
   );
 

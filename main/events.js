@@ -5,17 +5,21 @@ function setupListeners() {
   ipc.answerRenderer('open-file', () => {});
   ipc.answerRenderer('open-indd-file', () => {});
 
-  ipc.answerRenderer('dropbox-authorized', ({ accessToken }) =>
-    store.set('dropboxAccessToken', accessToken),
-  );
+  ipc.answerRenderer('dropbox-authorized', ({ accessToken }) => {
+    store.set('dropboxAccessToken', accessToken);
+  });
 
-  ipc.answerRenderer('dropbox-path-updated', ({ path }) =>
-    store.set('initialPath', path),
-  );
+  ipc.answerRenderer('dropbox-unauthorize', () => {
+    store.delete('dropboxAccessToken');
+  });
 
-  ipc.answerRenderer('show-all-files-updated', ({ showAllFiles }) =>
-    store.set('showAllFiles', showAllFiles),
-  );
+  ipc.answerRenderer('dropbox-path-updated', ({ path }) => {
+    store.set('initialPath', path);
+  });
+
+  ipc.answerRenderer('show-all-files-updated', ({ showAllFiles }) => {
+    store.set('showAllFiles', showAllFiles);
+  });
 }
 
 export { setupListeners };

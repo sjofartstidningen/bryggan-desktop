@@ -1,5 +1,7 @@
 import { basename } from 'path';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
+import Router from 'next/router';
+import { DropboxContext } from '../context/Dropbox';
 import { Header } from '../components/Header';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FolderList } from '../components/FolderList';
@@ -7,6 +9,7 @@ import { Folder, File, IdFile } from '../components/FolderItem';
 import { Sticky } from '../components/Sticky';
 import { ContextMenu, ContextMenuItem } from '../components/ContextMenu';
 import { Loading } from '../components/Loading';
+import { Button } from '../components/Button';
 import { useListFolder } from '../hooks/dropbox';
 import { sortByType } from '../utils';
 import { minutes } from '../../shared/time';
@@ -18,13 +21,20 @@ const filterRelevant = showAll => item =>
   showAll || item.type === 'folder' || item.name.endsWith('.indd');
 
 function FilePicker({ initialPath, showAllFiles }) {
+  const dropbox = useContext(DropboxContext);
   const [showAll, setShowAll] = useState(() =>
     showAllFiles === 'true' ? true : false,
   );
 
-  const { state, items, currentPath, error, goToPath, update } = useListFolder(
-    initialPath,
-  );
+  const {
+    state,
+    items,
+    currentPath,
+    error,
+    goToPath,
+    update,
+    setState,
+  } = useListFolder(initialPath);
 
   const filteredItems = useMemo(
     () => items.filter(filterRelevant(showAll)).sort(sortByType),
@@ -39,6 +49,17 @@ function FilePicker({ initialPath, showAllFiles }) {
   useCallMain('show-all-files-updated', { showAllFiles: showAll }, [showAll]);
   useInterval(update, minutes(1).toMilliseconds(), [currentPath]);
   useWindowEvent('keypress', e => e.keyCode === 114 && update(), [currentPath]);
+
+  const onSignOutClick = async () => {
+    try {
+      setState('loading');
+      await callMain('dropbox-unauthorize');
+      await dropbox.revokeToken();
+      Router.push({ pathname: '/authorize' });
+    } catch (err) {
+      console.dir(err);
+    }
+  };
 
   return (
     <div>
@@ -66,6 +87,11 @@ function FilePicker({ initialPath, showAllFiles }) {
             />
             <span>Show all files</span>
           </label>
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <Button type="button" onClick={onSignOutClick}>
+            Sign out
+          </Button>
         </ContextMenuItem>
       </ContextMenu>
 

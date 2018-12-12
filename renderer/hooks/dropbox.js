@@ -47,6 +47,7 @@ function useListFolder(initialPath = '/') {
     error,
     goToPath,
     update,
+    setState,
   };
 }
 

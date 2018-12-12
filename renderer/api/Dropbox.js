@@ -8,7 +8,7 @@ const checkAccessToken = accessToken => {
   }
 };
 
-const construcHeaders = accessToken => ({
+const constructHeaders = accessToken => ({
   Authorization: `Bearer ${accessToken}`,
   'Content-Type': 'application/json',
 });
@@ -65,7 +65,7 @@ async function listFolder(
       'https://api.dropboxapi.com/2/files/list_folder',
       { path: path === '/' ? '' : path },
       {
-        headers: construcHeaders(accessToken),
+        headers: constructHeaders(accessToken),
         cancelToken,
       },
     );
@@ -94,7 +94,7 @@ async function getAccount(
       'https://api.dropboxapi.com/2/users/get_account',
       { account_id: accountId },
       {
-        headers: construcHeaders(accessToken),
+        headers: constructHeaders(accessToken),
         cancelToken,
       },
     );
@@ -114,7 +114,7 @@ async function getCurrentAccount({ accessToken, cancelToken }) {
     'https://api.dropboxapi.com/2/users/get_current_account',
     undefined,
     {
-      headers: construcHeaders(accessToken),
+      headers: constructHeaders(accessToken),
       cancelToken,
     },
   );
@@ -126,10 +126,41 @@ async function getCurrentAccount({ accessToken, cancelToken }) {
   };
 }
 
+async function getToken({ code, clientId, clientSecret }) {
+  const { data } = await axios.post(
+    'https://api.dropboxapi.com/oauth2/token',
+    undefined,
+    {
+      params: {
+        code,
+        grant_type: 'authorization_code',
+      },
+      auth: {
+        username: clientId,
+        password: clientSecret,
+      },
+    },
+  );
+
+  return { accessToken: data.access_token };
+}
+
+async function revokeToken({ accessToken }) {
+  await axios.post(
+    'https://api.dropboxapi.com/2/auth/token/revoke',
+    undefined,
+    {
+      headers: constructHeaders(accessToken),
+    },
+  );
+}
+
 export {
   listFolderCache,
   listFolder,
   getAccountCache,
   getAccount,
   getCurrentAccount,
+  getToken,
+  revokeToken,
 };
