@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import log from 'electron-log';
 
 const useInterval = (fn, ms, when) => {
@@ -33,4 +33,16 @@ const useLog = (level, mountMessage, unmountMessage, when) => {
   }, when);
 };
 
-export { useInterval, useWindowEvent, useWindowKeypress, useLog };
+const useIsMounted = () => {
+  const ref = useRef(true);
+  useEffect(
+    () => () => {
+      ref.current = false;
+    },
+    [],
+  );
+
+  return () => ref.current;
+};
+
+export { useInterval, useWindowEvent, useWindowKeypress, useLog, useIsMounted };

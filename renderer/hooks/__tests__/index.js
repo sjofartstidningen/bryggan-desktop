@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { render, flushEffects } from 'react-testing-library';
 import log from 'electron-log';
 import * as hooks from '../';
@@ -75,5 +75,30 @@ describe('Hook: useLog', () => {
     flushEffects();
 
     expect(log.info).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('Hook: useIsMounted', () => {
+  it('should return a function to determine if component is mounted', async () => {
+    jest.useFakeTimers();
+    const testFn = jest.fn();
+
+    const Comp = () => {
+      const isMounted = hooks.useIsMounted();
+      useEffect(() => {
+        setTimeout(() => {
+          if (isMounted()) testFn();
+        }, 10);
+      });
+
+      return <div />;
+    };
+
+    const { unmount } = render(<Comp />);
+    flushEffects();
+    unmount();
+    jest.runOnlyPendingTimers();
+
+    expect(testFn).not.toHaveBeenCalled();
   });
 });
