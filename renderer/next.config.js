@@ -18,4 +18,5 @@ exports.webpack = config =>
 
 exports.exportPathMap = () => ({
   '/file-picker': { page: '/file-picker' },
+  '/authorize': { page: '/authorize' },
 });

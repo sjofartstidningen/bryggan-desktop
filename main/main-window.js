@@ -29,7 +29,6 @@ const initialize = async ({ page, query } = {}) => {
     maximizable: false,
     fullscreenable: false,
     webPreferences: {
-      webSecurity: true,
       devTools: is.development,
     },
   });

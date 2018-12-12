@@ -96,7 +96,7 @@ const Input = styled.input`
   color: ${p => p.theme.color.darkGrey};
 `;
 
-function SignIn() {
+function Authorize() {
   const dropbox = useContext(DropboxContext);
   const [page, setPage] = useState('authorize');
   const [code, setCode] = useState('');
@@ -205,4 +205,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default Authorize;
