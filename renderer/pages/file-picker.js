@@ -54,11 +54,12 @@ function FilePicker({ initialPath, showAllFiles }) {
   const onSignOutClick = async () => {
     try {
       setState('loading');
-      await callMain('dropbox-unauthorize');
       await dropbox.revokeToken();
-      Router.push({ pathname: '/authorize' });
     } catch (err) {
-      console.dir(err);
+      // Run everything even thoud revoke token might fail
+    } finally {
+      await callMain('dropbox-unauthorize');
+      Router.push({ pathname: '/authorize' });
     }
   };
 

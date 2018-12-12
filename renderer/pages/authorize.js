@@ -141,7 +141,6 @@ function SignIn() {
         new Error('Could not authorize. Maybe the code is not properly pasted'),
       );
       setPage('error');
-      console.dir(error);
     }
   };
 
