@@ -9,13 +9,13 @@ function Provider({ accessToken: initialAccessToken, children }) {
 
   const listFolder = (path, { cancelToken, ignoreCache } = {}) => {
     if (!accessToken)
-      throw new Error('Api key is required before using the api');
+      throw new Error('Access token is required before using the api');
     return Dropbox.listFolder(path, { accessToken, cancelToken, ignoreCache });
   };
 
   const getAccount = (accountId, { cancelToken, ignoreCache } = {}) => {
     if (!accessToken)
-      throw new Error('Api key is required before using the api');
+      throw new Error('Access token is required before using the api');
     return Dropbox.getAccount(accountId, {
       accessToken,
       cancelToken,
@@ -25,7 +25,7 @@ function Provider({ accessToken: initialAccessToken, children }) {
 
   const getCurrentAccount = ({ cancelToken } = {}) => {
     if (!accessToken)
-      throw new Error('Api key is required before using the api');
+      throw new Error('Access token is required before using the api');
     return Dropbox.getCurrentAccount({ accessToken, cancelToken });
   };
 
@@ -49,6 +49,7 @@ function Provider({ accessToken: initialAccessToken, children }) {
   useEffect(
     () => {
       if (accessToken) {
+        console.log({ accessToken });
         getCurrentAccount()
           .then(({ account }) => setCurrentAccount(account))
           .catch(() => {});
