@@ -81,7 +81,12 @@ function ContextMenu({ children, zIndex }) {
           <ContextMenuIcon baseline={false} />
           <VisuallyHidden>Show menu</VisuallyHidden>
         </MenuToggleButton>
-        <ChildMenuWrapper hidden={!showMenu}>{children}</ChildMenuWrapper>
+        <ChildMenuWrapper
+          hidden={!showMenu}
+          onClick={() => setShowMenu(!showMenu)}
+        >
+          {children}
+        </ChildMenuWrapper>
       </ContextMenuWrapper>
       {showMenu && (
         <ContextMenuBackdrop

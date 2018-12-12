@@ -42,8 +42,9 @@ function FilePicker({ initialPath, showAllFiles }) {
   );
 
   const onFolderClick = path => () => goToPath(path);
+  const onOpenFolder = () => callMain('open-folder', { path: currentPath });
   const onFileClick = path => () => callMain('open-file', { path });
-  const onIdFileClick = path => () => callMain('open-id-file', { path });
+  const onIdFileClick = path => () => callMain('open-indd-file', { path });
 
   useCallMain('dropbox-path-updated', { path: currentPath }, [currentPath]);
   useCallMain('show-all-files-updated', { showAllFiles: showAll }, [showAll]);
@@ -89,6 +90,16 @@ function FilePicker({ initialPath, showAllFiles }) {
             />
             <span>Show all files</span>
           </label>
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <Button type="button" onClick={update}>
+            Refresh
+          </Button>
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <Button type="button" onClick={onOpenFolder}>
+            Open current folder
+          </Button>
         </ContextMenuItem>
         <ContextMenuItem>
           <Button type="button" onClick={onSignOutClick}>
