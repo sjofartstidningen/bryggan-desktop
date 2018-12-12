@@ -48,3 +48,7 @@ const getWindowConfig = () => ({
 })();
 
 app.on('window-all-closed', event => event.preventDefault());
+
+app.on('quit', () => {
+  if (is.development) store.clear();
+});
