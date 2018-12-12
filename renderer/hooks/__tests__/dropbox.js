@@ -39,7 +39,7 @@ describe('hook: useListFolder', () => {
     );
 
     const { getByText } = render(
-      <DropboxProvider apiKey="foo">
+      <DropboxProvider accessToken="foo">
         <Comp />
       </DropboxProvider>,
     );

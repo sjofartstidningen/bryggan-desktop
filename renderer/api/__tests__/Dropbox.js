@@ -19,7 +19,7 @@ describe('Api: Dropbox.listFolder', () => {
     Dropbox.listFolderCache.clear();
   });
 
-  it('should throw if apiKey is not provided', async () => {
+  it('should throw if accessToken is not provided', async () => {
     await expect(Dropbox.listFolder('/path')).rejects.toThrow();
   });
 
@@ -27,7 +27,7 @@ describe('Api: Dropbox.listFolder', () => {
     axios.post.mockResolvedValue({ data: filesListFolder });
     const path = '/Tidningen/2018/11';
     const { items } = await Dropbox.listFolder(path, {
-      apiKey: 'foo',
+      accessToken: 'foo',
     });
 
     const folder = expect.objectContaining({
@@ -54,21 +54,21 @@ describe('Api: Dropbox.listFolder', () => {
   it('should fetch items from cache if possible', async () => {
     axios.post.mockResolvedValue({ data: filesListFolder });
 
-    await Dropbox.listFolder('/Tidningen/2018/11', { apiKey: 'foo' });
+    await Dropbox.listFolder('/Tidningen/2018/11', { accessToken: 'foo' });
     expect(Dropbox.listFolderCache.get).not.toHaveBeenCalled();
 
-    await Dropbox.listFolder('/Tidningen/2018/11', { apiKey: 'foo' });
+    await Dropbox.listFolder('/Tidningen/2018/11', { accessToken: 'foo' });
     expect(Dropbox.listFolderCache.get).toHaveBeenCalled();
   });
 
   it('should ignore cache if told to', async () => {
     axios.post.mockResolvedValue({ data: filesListFolder });
 
-    await Dropbox.listFolder('/Tidningen/2018/11', { apiKey: 'foo' });
+    await Dropbox.listFolder('/Tidningen/2018/11', { accessToken: 'foo' });
     expect(Dropbox.listFolderCache.get).not.toHaveBeenCalled();
 
     await Dropbox.listFolder('/Tidningen/2018/11', {
-      apiKey: 'foo',
+      accessToken: 'foo',
       ignoreCache: true,
     });
     expect(Dropbox.listFolderCache.get).not.toHaveBeenCalled();
@@ -81,7 +81,7 @@ describe('Api: Dropbox.getAccount', () => {
     Dropbox.getAccountCache.clear();
   });
 
-  it('should throw if apiKey is not provided', async () => {
+  it('should throw if accessToken is not provided', async () => {
     await expect(Dropbox.getAccount('accountId')).rejects.toThrow();
   });
 
@@ -89,7 +89,7 @@ describe('Api: Dropbox.getAccount', () => {
     axios.post.mockResolvedValue({ data: getAccount });
 
     const { account } = await Dropbox.getAccount('account-id', {
-      apiKey: 'apiKey',
+      accessToken: 'accessToken',
     });
 
     const expectedShape = expect.objectContaining({
@@ -105,21 +105,21 @@ describe('Api: Dropbox.getAccount', () => {
   it('should fetch items from cache if possible', async () => {
     axios.post.mockResolvedValue({ data: getAccount });
 
-    await Dropbox.getAccount('account-id', { apiKey: 'foo' });
+    await Dropbox.getAccount('account-id', { accessToken: 'foo' });
     expect(Dropbox.getAccountCache.get).not.toHaveBeenCalled();
 
-    await Dropbox.getAccount('account-id', { apiKey: 'foo' });
+    await Dropbox.getAccount('account-id', { accessToken: 'foo' });
     expect(Dropbox.getAccountCache.get).toHaveBeenCalled();
   });
 
   it('should ignore cache if told to', async () => {
     axios.post.mockResolvedValue({ data: getAccount });
 
-    await Dropbox.getAccount('account-id', { apiKey: 'foo' });
+    await Dropbox.getAccount('account-id', { accessToken: 'foo' });
     expect(Dropbox.getAccountCache.get).not.toHaveBeenCalled();
 
     await Dropbox.getAccount('account-id', {
-      apiKey: 'foo',
+      accessToken: 'foo',
       ignoreCache: true,
     });
     expect(Dropbox.getAccountCache.get).not.toHaveBeenCalled();
@@ -127,7 +127,7 @@ describe('Api: Dropbox.getAccount', () => {
 });
 
 describe('Api: Dropbox.getCurrentAccount', () => {
-  it('should throw if apiKey is not provided', async () => {
+  it('should throw if accessToken is not provided', async () => {
     await expect(Dropbox.getCurrentAccount('accountId')).rejects.toThrow();
   });
 
@@ -135,7 +135,7 @@ describe('Api: Dropbox.getCurrentAccount', () => {
     axios.post.mockResolvedValue({ data: getCurrentAccount });
 
     const { account } = await Dropbox.getCurrentAccount({
-      apiKey: 'apiKey',
+      accessToken: 'accessToken',
     });
 
     const expectedShape = expect.objectContaining({

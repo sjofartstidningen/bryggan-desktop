@@ -5,8 +5,8 @@ function setupListeners() {
   ipc.answerRenderer('open-file', () => {});
   ipc.answerRenderer('open-indd-file', () => {});
 
-  ipc.answerRenderer('dropbox-signed-in', ({ apiKey }) =>
-    store.set('dropboxApiKey', apiKey),
+  ipc.answerRenderer('dropbox-authorized', ({ accessToken }) =>
+    store.set('dropboxAccessToken', accessToken),
   );
 
   ipc.answerRenderer('dropbox-path-updated', ({ path }) =>

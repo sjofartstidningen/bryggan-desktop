@@ -2,14 +2,14 @@ import axios from 'axios';
 import { createSimpleCache } from '../../shared/simple-cache';
 import { minutes, days } from '../../shared/time';
 
-const checkApiKey = apiKey => {
-  if (typeof apiKey !== 'string') {
-    throw new Error('An api key is required to request folder contents');
+const checkAccessToken = accessToken => {
+  if (typeof accessToken !== 'string') {
+    throw new Error('An access token is required to request folder contents');
   }
 };
 
-const construcHeaders = apiKey => ({
-  Authorization: `Bearer ${apiKey}`,
+const construcHeaders = accessToken => ({
+  Authorization: `Bearer ${accessToken}`,
   'Content-Type': 'application/json',
 });
 
@@ -50,8 +50,11 @@ const normalizeAccountData = data => ({
 
 const listFolderCache = createSimpleCache(minutes(1).toMilliseconds());
 
-async function listFolder(path, { apiKey, cancelToken, ignoreCache } = {}) {
-  checkApiKey(apiKey);
+async function listFolder(
+  path,
+  { accessToken, cancelToken, ignoreCache } = {},
+) {
+  checkAccessToken(accessToken);
 
   let data;
 
@@ -62,7 +65,7 @@ async function listFolder(path, { apiKey, cancelToken, ignoreCache } = {}) {
       'https://api.dropboxapi.com/2/files/list_folder',
       { path: path === '/' ? '' : path },
       {
-        headers: construcHeaders(apiKey),
+        headers: construcHeaders(accessToken),
         cancelToken,
       },
     );
@@ -76,8 +79,11 @@ async function listFolder(path, { apiKey, cancelToken, ignoreCache } = {}) {
 
 const getAccountCache = createSimpleCache(days(1).toMilliseconds());
 
-async function getAccount(accountId, { apiKey, cancelToken, ignoreCache }) {
-  checkApiKey(apiKey);
+async function getAccount(
+  accountId,
+  { accessToken, cancelToken, ignoreCache },
+) {
+  checkAccessToken(accessToken);
 
   let data;
 
@@ -88,7 +94,7 @@ async function getAccount(accountId, { apiKey, cancelToken, ignoreCache }) {
       'https://api.dropboxapi.com/2/users/get_account',
       { account_id: accountId },
       {
-        headers: construcHeaders(apiKey),
+        headers: construcHeaders(accessToken),
         cancelToken,
       },
     );
@@ -101,14 +107,14 @@ async function getAccount(accountId, { apiKey, cancelToken, ignoreCache }) {
   };
 }
 
-async function getCurrentAccount({ apiKey, cancelToken }) {
-  checkApiKey(apiKey);
+async function getCurrentAccount({ accessToken, cancelToken }) {
+  checkAccessToken(accessToken);
 
   const { data } = await axios.post(
     'https://api.dropboxapi.com/2/users/get_current_account',
     undefined,
     {
-      headers: construcHeaders(apiKey),
+      headers: construcHeaders(accessToken),
       cancelToken,
     },
   );

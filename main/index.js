@@ -11,13 +11,13 @@ import { store } from './store';
  * REMOVE THIS LATER WHEN
  * SIGN IN PROESS IS SETUP...
  */
-store.delete('dropboxApiKey');
-// store.set('dropboxApiKey', process.env.DROPBOX_API_KEY);
+store.clear();
+// store.set('dropboxAccessToken', process.env.DROPBOX_ACCESS_TOKEN);
 
 const getWindowConfig = () => ({
-  page: store.has('dropboxApiKey') ? 'file-picker' : 'sign-in',
+  page: store.has('dropboxAccessToken') ? 'file-picker' : 'sign-in',
   query: {
-    dropboxApiKey: store.get('dropboxApiKey'),
+    accessToken: store.get('dropboxAccessToken'),
     initialPath: store.get('initialPath', '/'),
     showAllFiles: store.get('showAllFiles', false),
   },

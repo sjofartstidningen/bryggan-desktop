@@ -14,12 +14,12 @@ class App extends NextApp {
 
   render() {
     const { Component, pageProps, router } = this.props;
-    const { dropboxApiKey } = router.query;
+    const { accessToken } = router.query;
 
     return (
       <Container>
         <ThemeProvider theme={theme}>
-          <DropboxProvider apiKey={dropboxApiKey}>
+          <DropboxProvider accessToken={accessToken}>
             <Fragment>
               <GlobalStyle />
               <DraggableArea />

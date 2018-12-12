@@ -3,38 +3,45 @@ import * as Dropbox from '../api/Dropbox';
 
 const DropboxContext = createContext();
 
-function Provider({ apiKey, children }) {
+function Provider({ accessToken, children }) {
   const [currentAccount, setCurrentAccount] = useState({});
 
   const listFolder = (path, { cancelToken, ignoreCache } = {}) => {
-    if (!apiKey) throw new Error('Api key is required before using the api');
-    return Dropbox.listFolder(path, { apiKey, cancelToken, ignoreCache });
+    if (!accessToken)
+      throw new Error('Api key is required before using the api');
+    return Dropbox.listFolder(path, { accessToken, cancelToken, ignoreCache });
   };
 
   const getAccount = (accountId, { cancelToken, ignoreCache } = {}) => {
-    if (!apiKey) throw new Error('Api key is required before using the api');
-    return Dropbox.getAccount(accountId, { apiKey, cancelToken, ignoreCache });
+    if (!accessToken)
+      throw new Error('Api key is required before using the api');
+    return Dropbox.getAccount(accountId, {
+      accessToken,
+      cancelToken,
+      ignoreCache,
+    });
   };
 
   const getCurrentAccount = ({ cancelToken } = {}) => {
-    if (!apiKey) throw new Error('Api key is required before using the api');
-    return Dropbox.getCurrentAccount({ apiKey, cancelToken });
+    if (!accessToken)
+      throw new Error('Api key is required before using the api');
+    return Dropbox.getCurrentAccount({ accessToken, cancelToken });
   };
 
   useEffect(
     () => {
-      if (apiKey) {
+      if (accessToken) {
         getCurrentAccount()
           .then(({ account }) => setCurrentAccount(account))
           .catch(() => {});
       }
     },
-    [apiKey],
+    [accessToken],
   );
 
   const contextValue = useMemo(
     () => ({ currentAccount, listFolder, getAccount, getCurrentAccount }),
-    [apiKey, currentAccount],
+    [accessToken, currentAccount],
   );
 
   return (

@@ -12,7 +12,7 @@ axios.post.mockResolvedValue({ data: getAccount });
 describe('Component: <DisplayName />', () => {
   it('should render the display name of a provided account id', async () => {
     const { getByText } = render(
-      <Provider apiKey="foo">
+      <Provider accessToken="foo">
         <p>
           <DisplayName accountId="foo" />
         </p>
