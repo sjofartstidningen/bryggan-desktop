@@ -1,5 +1,5 @@
 import { shell } from 'electron';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import Router from 'next/router';
 import styled, { css } from 'styled-components';
 import qs from 'qs';
@@ -89,9 +89,10 @@ const Input = styled.input`
   border: 1px solid ${p => p.theme.color.grey};
   ${borderRadius('right', '4px')};
   padding: 0 0.5rem;
-  font-size: ${p => p.theme.font.size.large};
+  font-size: ${p => p.theme.font.size.normal};
   font-family: ${p => p.theme.font.family};
   line-height: 2rem;
+  color: ${p => p.theme.color.darkGrey};
 `;
 
 function SignIn() {
@@ -99,6 +100,7 @@ function SignIn() {
   const [page, setPage] = useState('authorize');
   const [code, setCode] = useState('');
   const [error, setError] = useState(null);
+  const codeInputRef = useRef(null);
 
   const onAuthorizeClick = () => {
     const query = qs.stringify({
@@ -109,6 +111,14 @@ function SignIn() {
     });
     shell.openExternal(`https://www.dropbox.com/oauth2/authorize?${query}`);
     setPage('code-input');
+  };
+
+  const onCodeInputShow = async () => {
+    if (page === 'code-input') {
+      codeInputRef.current.focus();
+      const codeFromClipboard = await navigator.clipboard.readText();
+      if (codeFromClipboard.length === 43) setCode(codeFromClipboard);
+    }
   };
 
   const onSignInClick = async () => {
@@ -141,7 +151,13 @@ function SignIn() {
         <Header />
       </div>
 
-      <main>
+      <main
+        style={{
+          width: '100%',
+          height: 'calc(100vh - 92px)', // Approximate height of header
+          overflowX: 'hidden',
+        }}
+      >
         <Section hidden={page !== 'authorize'}>
           <SectionTitle>Sign in with Dropbox</SectionTitle>
           <BodyText>
@@ -153,7 +169,10 @@ function SignIn() {
           </CtaButton>
         </Section>
 
-        <Section hidden={page !== 'code-input'}>
+        <Section
+          hidden={page !== 'code-input'}
+          onTransitionEnd={onCodeInputShow}
+        >
           <SectionTitle>Paste your code to sign in</SectionTitle>
           <Label htmlFor="input-code">
             <LabelText>Code</LabelText>
@@ -163,6 +182,7 @@ function SignIn() {
               name="input-code"
               value={code}
               onChange={e => setCode(e.target.value)}
+              ref={codeInputRef}
             />
           </Label>
           <CtaButton type="button" onClick={onSignInClick}>
