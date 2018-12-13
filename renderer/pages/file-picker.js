@@ -2,8 +2,8 @@ import React, { useEffect, useState, useMemo, useContext } from 'react';
 import Router from 'next/router';
 import { CancelToken, isCancel } from 'axios';
 import { DropboxContext } from '../context/DropboxContext';
-import { Header } from '../components/Header';
 import { Breadcrumbs } from '../components/Breadcrumbs';
+import { FetchIndicator } from '../components/FetchIndicator';
 import { FolderList } from '../components/FolderList';
 import { Folder, File, IdFile } from '../components/FolderItem';
 import { Sticky } from '../components/Sticky';
@@ -128,10 +128,6 @@ function FilePicker() {
 
   return (
     <div>
-      <div style={{ zIndex: 1 }}>
-        <Header />
-      </div>
-
       <Sticky as="section" style={{ zIndex: 2 }}>
         <nav>
           <Breadcrumbs
@@ -139,6 +135,7 @@ function FilePicker() {
             onPathClick={({ path }) => onFolderClick(path)}
           />
         </nav>
+        <FetchIndicator isFetching={stage === 'fetching'} />
       </Sticky>
 
       <ContextMenu zIndex={4}>
@@ -172,11 +169,8 @@ function FilePicker() {
 
       <main style={{ zIndex: 1 }}>
         {stage === 'initial' && <Loading message={'Starting up'} />}
-        {stage === 'fetching' && (
-          <Loading message={'Fetching folder content'} />
-        )}
         {stage === 'error' && <p>{error.message}</p>}
-        {stage === 'at-rest' && (
+        {(stage === 'at-rest' || stage === 'fetching') && (
           <FolderList
             items={filteredFolderContent}
             renderFolder={file => (
@@ -192,7 +186,15 @@ function FilePicker() {
                 onClick={() => onIdFileClick(file.path)}
               />
             )}
-            renderEmpty={() => <Loading message="No relevant files" />}
+            renderEmpty={() => (
+              <Loading
+                message={
+                  stage === 'fetching' && filteredFolderContent.length < 1
+                    ? 'Fetching'
+                    : 'No relevant files'
+                }
+              />
+            )}
           />
         )}
       </main>

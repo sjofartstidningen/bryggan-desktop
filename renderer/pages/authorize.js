@@ -4,7 +4,6 @@ import Router from 'next/router';
 import styled, { css } from 'styled-components';
 import { borderRadius } from 'polished';
 import { DropboxContext } from '../context/DropboxContext';
-import { Header } from '../components/Header';
 import { Loading } from '../components/Loading';
 
 const Section = styled.div`
@@ -128,10 +127,6 @@ function Authorize() {
 
   return (
     <div>
-      <div style={{ zIndex: 1 }}>
-        <Header />
-      </div>
-
       <main
         style={{
           width: '100%',

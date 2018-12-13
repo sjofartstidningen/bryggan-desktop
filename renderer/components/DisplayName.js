@@ -16,7 +16,6 @@ function DisplayName({ accountId }) {
 
   useEffect(
     () => {
-      console.log('Should fetch:', dropbox.stage === dropbox.Stage.authorized);
       if (dropbox.stage === dropbox.Stage.authorized) {
         const controller = CancelToken.source();
         queue

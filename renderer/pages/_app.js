@@ -5,6 +5,7 @@ import log from 'electron-log';
 import { GlobalStyle } from '../components/GlobalStyle';
 import { DropboxProvider } from '../context/DropboxContext';
 import { DraggableArea } from '../components/DraggableArea';
+import { Header } from '../components/Header';
 import { callMain } from '../utils/ipc';
 import * as theme from '../style/theme';
 
@@ -25,6 +26,7 @@ class App extends NextApp {
             <Fragment>
               <GlobalStyle />
               <DraggableArea />
+              <Header />
               <Component {...pageProps} />
             </Fragment>
           </DropboxProvider>
