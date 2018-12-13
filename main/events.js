@@ -6,11 +6,15 @@ import {
   openDropboxIndesignFile,
   openDropboxFolder,
 } from './utils/open';
+import * as channel from '../shared/ipc-channels';
 
 function setupListeners() {
-  ipc.answerRenderer('get-state', async () => store.store);
+  ipc.answerRenderer(channel.getState, async () => store.store);
 
-  ipc.answerRenderer('open-folder', async ({ path }) => {
+  /**
+   * Events to open files
+   */
+  ipc.answerRenderer(channel.openFolder, async ({ path }) => {
     try {
       await openDropboxFolder(path);
       log.verbose(`Successfully opened folder ${path}`);
@@ -21,7 +25,7 @@ function setupListeners() {
     }
   });
 
-  ipc.answerRenderer('open-file', async ({ path }) => {
+  ipc.answerRenderer(channel.openFile, async ({ path }) => {
     try {
       await openDropboxFile(path);
       log.verbose(`Successfully opened file ${path}`);
@@ -32,7 +36,7 @@ function setupListeners() {
     }
   });
 
-  ipc.answerRenderer('open-indd-file', async ({ path }) => {
+  ipc.answerRenderer(channel.openInddFile, async ({ path }) => {
     try {
       await openDropboxIndesignFile(path);
       log.verbose(`Successfully opened InDesign file ${path}`);
@@ -43,25 +47,56 @@ function setupListeners() {
     }
   });
 
-  ipc.answerRenderer('dropbox-authorized', ({ accessToken }) => {
+  /**
+   * Dropbox related events
+   */
+  ipc.answerRenderer(channel.dropboxGetAccessToken, async () => {
+    return {
+      dropboxAccessToken: store.get('dropboxAccessToken'),
+    };
+  });
+
+  ipc.answerRenderer(channel.dropboxAuthorized, ({ accessToken }) => {
     log.verbose('New Dropbox access token recieved');
     store.set('dropboxAccessToken', accessToken);
   });
 
-  ipc.answerRenderer('dropbox-unauthorize', () => {
-    log.verbose('Dropbox access token revoked');
-    store.delete('dropboxAccessToken');
+  ipc.answerRenderer(channel.dropboxUnauthorize, () => {
+    try {
+      log.verbose('Dropbox access token revoked');
+      store.delete('dropboxAccessToken');
+    } catch (error) {
+      log.error('Could not remove dropboxAccessToken');
+      log.error(error);
+    }
   });
 
-  ipc.answerRenderer('dropbox-path-updated', ({ path }) => {
-    log.verbose(`Initial startup path updated to ${path}`);
-    store.set('initialPath', path);
-  });
+  /**
+   * File Picker related events
+   */
+  ipc.answerRenderer(channel.filePickerGetShowAllFiles, () => ({
+    showAllFiles: store.get('showAllFiles', false),
+  }));
 
-  ipc.answerRenderer('show-all-files-updated', ({ showAllFiles }) => {
-    log.verbose(`Initial show all files setting updated to: ${showAllFiles}`);
-    store.set('showAllFiles', showAllFiles);
-  });
+  ipc.answerRenderer(channel.filePickerGetInitialPath, () => ({
+    initialPath: store.get('initialPath', '/'),
+  }));
+
+  ipc.answerRenderer(
+    channel.filePickerInitialPathUpdated,
+    ({ initialPath }) => {
+      log.verbose(`Initial startup path updated to ${initialPath}`);
+      store.set('initialPath', initialPath);
+    },
+  );
+
+  ipc.answerRenderer(
+    channel.filePickerShowAllFilesUpdated,
+    ({ showAllFiles }) => {
+      log.verbose(`Initial show all files setting updated to: ${showAllFiles}`);
+      store.set('showAllFiles', showAllFiles);
+    },
+  );
 }
 
 export { setupListeners };

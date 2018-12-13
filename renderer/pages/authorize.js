@@ -2,13 +2,10 @@ import { shell } from 'electron';
 import React, { useState, useContext, useRef } from 'react';
 import Router from 'next/router';
 import styled, { css } from 'styled-components';
-import qs from 'qs';
 import { borderRadius } from 'polished';
-import { DropboxContext } from '../context/Dropbox';
+import { DropboxContext } from '../context/DropboxContext';
 import { Header } from '../components/Header';
 import { Loading } from '../components/Loading';
-import { callMain } from '../utils/ipc';
-import env from '../../shared/env-config';
 
 const Section = styled.div`
   position: absolute;
@@ -104,13 +101,7 @@ function Authorize() {
   const codeInputRef = useRef(null);
 
   const onAuthorizeClick = () => {
-    const query = qs.stringify({
-      response_type: 'code',
-      client_id: env.DROPBOX_APP_KEY,
-      require_role: 'work',
-      disable_signup: true,
-    });
-    shell.openExternal(`https://www.dropbox.com/oauth2/authorize?${query}`);
+    shell.openExternal(dropbox.getAuthorizeEndpoint());
     setPage('code-input');
   };
 
@@ -125,13 +116,7 @@ function Authorize() {
   const onSignInClick = async () => {
     try {
       setPage('loading');
-      const { accessToken } = await dropbox.getToken({
-        code,
-        clientId: env.DROPBOX_APP_KEY,
-        clientSecret: env.DROPBOX_APP_SECRET,
-      });
-
-      await callMain('dropbox-authorized', { accessToken });
+      await dropbox.getToken(code);
       Router.push('/file-picker');
     } catch (error) {
       setError(

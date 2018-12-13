@@ -1,7 +1,7 @@
 import { CancelToken, isCancel } from 'axios';
 import { useState, useEffect, useContext } from 'react';
 import PQueue from 'p-queue';
-import { DropboxContext } from '../context/Dropbox';
+import { DropboxContext } from '../context/DropboxContext';
 
 /**
  * This queue is there to prevent fireing of simultaneous calls for the same
@@ -16,21 +16,26 @@ function DisplayName({ accountId }) {
 
   useEffect(
     () => {
-      const controller = CancelToken.source();
-      queue
-        .add(() =>
-          dropbox.getAccount(accountId, {
-            cancelToken: controller.token,
-            ignoreCache: false,
-          }),
-        )
-        .then(({ account }) => setDisplayName(account.displayName))
-        .catch(error => {
-          if (isCancel(error)) return;
-          // TODO: Handle error
-        });
+      console.log('Should fetch:', dropbox.stage === dropbox.Stage.authorized);
+      if (dropbox.stage === dropbox.Stage.authorized) {
+        const controller = CancelToken.source();
+        queue
+          .add(() =>
+            dropbox.getAccount(accountId, {
+              cancelToken: controller.token,
+              ignoreCache: false,
+            }),
+          )
+          .then(({ account }) => setDisplayName(account.displayName))
+          .catch(error => {
+            console.error(error);
+            if (isCancel(error)) return;
+          });
+
+        return () => controller.cancel();
+      }
     },
-    [accountId],
+    [accountId, dropbox.stage],
   );
 
   return displayName;
