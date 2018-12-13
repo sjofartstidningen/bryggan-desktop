@@ -4,7 +4,7 @@ import {
   filesListFolder,
   getAccount,
   getCurrentAccount,
-} from '../../__fixtures__/Dropbox';
+} from '../../../__fixtures__/Dropbox';
 
 jest.mock('axios');
 jest.mock('electron-log');

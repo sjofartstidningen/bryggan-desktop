@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useMemo } from 'react';
 import log from 'electron-log';
 import qs from 'qs';
-import * as Dropbox from '../api/Dropbox';
+import * as Dropbox from '../../shared/api/Dropbox';
 import { callMain } from '../utils/ipc';
 import env from '../../shared/env-config';
 import {
