@@ -1,23 +1,7 @@
-import { app, shell } from 'electron';
+import { shell } from 'electron';
 import { join } from 'path';
-import execa from 'execa';
-import fs from 'fs';
-import { promisify } from 'util';
-import { getLatestVersion } from './indesign';
-
-const readFile = promisify(fs.readFile);
-
-const getDropboxRoot = async () => {
-  try {
-    const homeDir = app.getPath('home');
-    const dropboxInfo = join(homeDir, '.dropbox/info.json');
-    const content = await readFile(dropboxInfo, 'utf-8');
-    const data = JSON.parse(content);
-    return data.business.path;
-  } catch (err) {
-    throw new Error('Could not find Dropbox root folder');
-  }
-};
+import { openIndesignFile } from './indesign';
+import { getDropboxRoot } from './dropbox';
 
 async function openDropboxFolder(path) {
   try {
@@ -43,9 +27,7 @@ async function openDropboxIndesignFile(path) {
   try {
     const dropboxRoot = await getDropboxRoot();
     const fullPath = join(dropboxRoot, path);
-    const { app: indesign } = await getLatestVersion();
-
-    await execa('open', ['-a', indesign, fullPath]);
+    await openIndesignFile(fullPath);
   } catch (error) {
     throw new Error(`Could not locate or open ${path}`);
   }

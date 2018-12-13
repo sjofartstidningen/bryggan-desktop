@@ -62,4 +62,9 @@ async function getLatestVersion() {
   return sorted[0];
 }
 
-export { getLatestVersion };
+const openIndesignFile = async fullPath => {
+  const { app: indesign } = await getLatestVersion();
+  await execa('open', ['-a', indesign, fullPath]);
+};
+
+export { getLatestVersion, openIndesignFile };

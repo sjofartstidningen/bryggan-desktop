@@ -11,17 +11,14 @@ import { store } from './store';
 import { setupExceptionHandler } from '../shared/exception-handler';
 
 log.transports.file.level = is.development ? false : 'info';
+log.transports.console.level = is.development ? 'verbose' : false;
 log.info('---New execution---');
 
 setupExceptionHandler(is.development);
+setupListeners();
 
 const getWindowConfig = () => ({
   page: store.has('dropboxAccessToken') ? 'file-picker' : 'authorize',
-  query: {
-    accessToken: store.get('dropboxAccessToken'),
-    initialPath: store.get('initialPath', '/'),
-    showAllFiles: store.get('showAllFiles', false),
-  },
 });
 
 (async () => {
@@ -34,9 +31,6 @@ const getWindowConfig = () => ({
   );
 
   log.verbose('Next and devtools prepared');
-
-  setupListeners();
-  log.verbose('Renderer event listeners setup');
 
   await mainWindow.initialize(getWindowConfig());
   await mainWindow.show();
