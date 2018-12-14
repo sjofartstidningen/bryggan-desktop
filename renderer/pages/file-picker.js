@@ -15,18 +15,18 @@ import {
   useInterval,
   useWindowEvent,
   useWindowKeypress,
+  useCallMain,
   useMainStore,
 } from '../hooks';
+import { useListFolder, ListFolderStage } from '../hooks/dropbox';
 import { callMain } from '../utils/ipc';
 import {
-  filePickerShowAllFilesUpdated,
-  filePickerInitialPathUpdated,
+  storeUpdate,
   openFolder,
   openFile,
   openInddFile,
   dropboxUnauthorize,
 } from '../../shared/ipc-channels';
-import { useListFolder, ListFolderStage } from '../hooks/dropbox';
 
 const filterRelevant = showAll => item =>
   showAll || item.type === 'folder' || item.name.endsWith('.indd');
@@ -47,15 +47,14 @@ function FilePicker({ accessToken, initialPath, showAllFiles }) {
     [folderContent, showAll],
   );
 
-  const onFolderClick = path => {
-    setPath(path);
-    callMain(filePickerInitialPathUpdated, { initialPath: path });
-  };
-
-  const onShowAllClick = () => {
-    setShowAll(!showAll);
-    callMain(filePickerShowAllFilesUpdated, { showAllFiles: !showAll });
-  };
+  /**
+   * Update initialPath and showAllFiles in store on main thread
+   */
+  useCallMain(
+    storeUpdate,
+    { initialPath: currentPath, showAllFiles: showAll },
+    [currentPath, showAll],
+  );
 
   const onSignOutClick = async () => {
     await Dropbox.revokeToken({ accessToken });
@@ -77,7 +76,7 @@ function FilePicker({ accessToken, initialPath, showAllFiles }) {
         <nav>
           <Breadcrumbs
             currentPath={currentPath || '/'}
-            onPathClick={({ path }) => onFolderClick(path)}
+            onPathClick={({ path }) => setPath(path)}
           />
         </nav>
         <FetchIndicator isFetching={stage === ListFolderStage.fetching} />
@@ -90,7 +89,7 @@ function FilePicker({ accessToken, initialPath, showAllFiles }) {
               type="checkbox"
               id="cb-show-all"
               checked={showAll}
-              onChange={onShowAllClick}
+              onChange={() => setShowAll(!showAll)}
             />
             <span>Show all files</span>
           </label>
@@ -122,7 +121,7 @@ function FilePicker({ accessToken, initialPath, showAllFiles }) {
           <FolderList
             items={filteredFolderContent}
             renderFolder={file => (
-              <Folder file={file} onClick={() => onFolderClick(file.path)} />
+              <Folder file={file} onClick={() => setPath(file.path)} />
             )}
             renderFile={file => (
               <File file={file} onClick={() => onFileClick(file.path)} />
