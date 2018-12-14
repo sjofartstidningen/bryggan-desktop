@@ -38,6 +38,9 @@ async function openDropboxIndesignFile(path) {
 }
 
 async function openLocalIndesignFile(path) {
+  /**
+   * TODO: Something is wrong with en encoding of the Dropbox path...
+   */
   try {
     console.log();
     const dropboxRoot = await getDropboxRoot();
