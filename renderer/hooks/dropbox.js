@@ -22,7 +22,7 @@ function useListFolder({ accessToken, initialPath }) {
     },
   );
 
-  const safeSetState = nextState => isMounted && setState(nextState);
+  const safeSetState = nextState => isMounted() && setState(nextState);
 
   const fetchCurrentPath = async ({ ignoreCache, cancelToken }) => {
     try {

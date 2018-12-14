@@ -3,7 +3,6 @@ import NextApp, { Container } from 'next/app';
 import { ThemeProvider } from 'styled-components';
 import log from 'electron-log';
 import { GlobalStyle } from '../components/GlobalStyle';
-import { DropboxProvider } from '../context/DropboxContext';
 import { DraggableArea } from '../components/DraggableArea';
 import { Header } from '../components/Header';
 import { callMain } from '../utils/ipc';
@@ -22,14 +21,12 @@ class App extends NextApp {
     return (
       <Container>
         <ThemeProvider theme={theme}>
-          <DropboxProvider>
-            <Fragment>
-              <GlobalStyle />
-              <DraggableArea />
-              <Header />
-              <Component {...pageProps} />
-            </Fragment>
-          </DropboxProvider>
+          <Fragment>
+            <GlobalStyle />
+            <DraggableArea />
+            <Header />
+            <Component {...pageProps} />
+          </Fragment>
         </ThemeProvider>
       </Container>
     );

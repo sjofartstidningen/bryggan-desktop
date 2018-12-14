@@ -27,13 +27,10 @@ function DropboxProvider({ children }) {
     log.verbose('Will fetch access token');
 
     callMain(dropboxGetAccessToken)
-      .then(({ dropboxAccessToken }) => {
-        if (
-          typeof dropboxAccessToken === 'string' &&
-          dropboxAccessToken !== 'null'
-        ) {
+      .then(({ accessToken }) => {
+        if (typeof accessToken === 'string' && accessToken !== 'null') {
           log.info(`Access token retrieved`);
-          setAccessToken(dropboxAccessToken);
+          setAccessToken(accessToken);
           setStage(Stage.authorized);
         } else {
           log.info('Access token not retrieved');
