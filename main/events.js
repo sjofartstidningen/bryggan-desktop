@@ -9,8 +9,6 @@ import {
 import * as channel from '../shared/ipc-channels';
 
 function setupListeners() {
-  ipc.answerRenderer(channel.getState, async () => store.store);
-
   ipc.answerRenderer(channel.storeGet, async ({ keys }) =>
     keys.reduce(
       (acc, key) => ({
@@ -67,12 +65,6 @@ function setupListeners() {
   /**
    * Dropbox related events
    */
-  ipc.answerRenderer(channel.dropboxGetAccessToken, async () => {
-    return {
-      accessToken: store.get('accessToken'),
-    };
-  });
-
   ipc.answerRenderer(channel.dropboxAuthorized, ({ accessToken }) => {
     log.verbose('New Dropbox access token recieved');
     store.set('accessToken', accessToken);
@@ -87,33 +79,6 @@ function setupListeners() {
       log.error(error);
     }
   });
-
-  /**
-   * File Picker related events
-   */
-  ipc.answerRenderer(channel.filePickerGetShowAllFiles, () => ({
-    showAllFiles: store.get('showAllFiles', false),
-  }));
-
-  ipc.answerRenderer(channel.filePickerGetInitialPath, () => ({
-    initialPath: store.get('initialPath', '/'),
-  }));
-
-  ipc.answerRenderer(
-    channel.filePickerInitialPathUpdated,
-    ({ initialPath }) => {
-      log.verbose(`Initial startup path updated to ${initialPath}`);
-      store.set('initialPath', initialPath);
-    },
-  );
-
-  ipc.answerRenderer(
-    channel.filePickerShowAllFilesUpdated,
-    ({ showAllFiles }) => {
-      log.verbose(`Initial show all files setting updated to: ${showAllFiles}`);
-      store.set('showAllFiles', showAllFiles);
-    },
-  );
 }
 
 export { setupListeners };
