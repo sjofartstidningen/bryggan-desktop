@@ -21,6 +21,13 @@ function setupListeners() {
     ),
   );
 
+  ipc.answerRenderer(channel.storeUpdate, async newState => {
+    for (const prop in newState) {
+      log.info(`Updated ${prop} in store to ${newState[prop]}`);
+      store.set(prop, newState[prop]);
+    }
+  });
+
   /**
    * Events to open files
    */

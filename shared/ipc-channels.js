@@ -1,5 +1,6 @@
 export const getState = 'GET_STATE';
 export const storeGet = 'STORE_GET';
+export const storeUpdate = 'STORE_UPDATE';
 export const openFolder = 'OPEN_FOLDER';
 export const openFile = 'OPEN_FILE';
 export const openInddFile = 'OPEN_INDD_FILE';

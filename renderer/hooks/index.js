@@ -63,12 +63,17 @@ const usePromise = (promiseFn, inputs) => {
   return [settled, resolvedValue, rejectedValue];
 };
 
-const useMainStore = (keys = []) => {
-  const [settled, response, error] = usePromise(
-    () => callMain(storeGet, { keys }),
-    [],
+const useCallMain = (channel, payload, inputs) => {
+  const [settled, resolvedValue, rejectedValue] = usePromise(
+    () => callMain(channel, payload),
+    inputs,
   );
 
+  return [settled, resolvedValue, rejectedValue];
+};
+
+const useMainStore = (keys = []) => {
+  const [settled, response, error] = useCallMain(storeGet, { keys }, []);
   return { settled, response, error };
 };
 
@@ -79,5 +84,6 @@ export {
   useLog,
   useIsMounted,
   usePromise,
+  useCallMain,
   useMainStore,
 };
