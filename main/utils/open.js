@@ -1,7 +1,11 @@
 import { shell } from 'electron';
-import { join } from 'path';
+import log from 'electron-log';
+import { join, dirname, basename } from 'path';
 import { openIndesignFile } from './indesign';
 import { getDropboxRoot } from './dropbox';
+import { listFolder } from '../../shared/api/Dropbox';
+import { store } from '../store';
+import { hasIdlkFile } from '../../renderer/utils';
 
 async function openDropboxFolder(path) {
   try {
@@ -33,4 +37,42 @@ async function openDropboxIndesignFile(path) {
   }
 }
 
-export { openDropboxFolder, openDropboxFile, openDropboxIndesignFile };
+async function openLocalIndesignFile(path) {
+  try {
+    console.log();
+    const dropboxRoot = await getDropboxRoot();
+    const isInsideDropboxFolder = path.match(/dropbox/gi);
+    const accessToken = store.get('accessToken');
+
+    console.log({
+      correctDropboxRoot:
+        dropboxRoot === '/Users/adam/Dropbox (Sjöfartstidningen)',
+      dropboxRoot,
+      isInsideDropboxFolder,
+      accessToken,
+    });
+
+    if (!isInsideDropboxFolder || !accessToken) {
+      log.verbose(`Opening file ${path} as local`);
+      await openIndesignFile(path);
+    } else {
+      log.verbose(`Opening file ${path} as Dropbox file`);
+      const dropboxDir = dirname(path.replace(dropboxRoot, ''));
+      const { items } = await listFolder(dropboxDir, { accessToken });
+      const isLocked = hasIdlkFile({ name: basename(path) }, items);
+      if (isLocked) throw new Error('File locked');
+
+      await openIndesignFile(path);
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Could not locate or open ${path}`);
+  }
+}
+
+export {
+  openDropboxFolder,
+  openDropboxFile,
+  openDropboxIndesignFile,
+  openLocalIndesignFile,
+};

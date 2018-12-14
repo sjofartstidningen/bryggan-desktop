@@ -8,6 +8,7 @@ import * as mainWindow from './main-window';
 import { setupListeners } from './events';
 import { parallell } from './utils/promise';
 import { store } from './store';
+import { fileQueue } from './utils/FileQueue';
 import { setupExceptionHandler } from '../shared/exception-handler';
 
 log.transports.file.level = is.development ? false : 'info';
@@ -18,7 +19,13 @@ setupExceptionHandler(is.development);
 setupListeners();
 
 const getWindowConfig = () => ({
-  page: store.has('accessToken') ? 'file-picker' : 'authorize',
+  page: 'open-file', // 'file-picker',
+});
+
+app.on('open-file', (event, path) => {
+  event.preventDefault();
+  log.info(`Wants to open file on path: ${path}`);
+  fileQueue.push(path);
 });
 
 (async () => {

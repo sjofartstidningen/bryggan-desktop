@@ -24,6 +24,7 @@ const MessageWrapper = styled.p`
   font-size: 0.75rem;
   width: auto;
   max-width: 150px;
+  text-align: center;
 `;
 
 function Loading({ threshold, message }) {

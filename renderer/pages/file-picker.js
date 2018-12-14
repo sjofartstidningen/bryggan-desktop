@@ -173,7 +173,9 @@ const FilePickerWrapper = () => {
       <main style={{ zIndex: 1 }}>
         {!settled && <Loading message="Starting up" />}
         {settled && error && <p>{error.message}</p>}
-        {settled && response && <FilePicker {...response} />}
+        {settled && response && response.accessToken && (
+          <FilePicker {...response} />
+        )}
       </main>
     </div>
   );

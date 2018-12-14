@@ -5,3 +5,6 @@ export const openFile = 'OPEN_FILE';
 export const openInddFile = 'OPEN_INDD_FILE';
 export const dropboxAuthorized = 'DROPBOX_AUTHORIZED';
 export const dropboxUnauthorize = 'DROPBOX_UNAUTHORIZE';
+export const filesGet = 'FILES_GET';
+export const fileProcessed = 'FILE_PROCESSED';
+export const fileOpen = 'FILE_OPEN';
