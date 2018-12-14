@@ -11,6 +11,16 @@ import * as channel from '../shared/ipc-channels';
 function setupListeners() {
   ipc.answerRenderer(channel.getState, async () => store.store);
 
+  ipc.answerRenderer(channel.storeGet, async ({ keys }) =>
+    keys.reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: store.get(key),
+      }),
+      {},
+    ),
+  );
+
   /**
    * Events to open files
    */
@@ -52,21 +62,21 @@ function setupListeners() {
    */
   ipc.answerRenderer(channel.dropboxGetAccessToken, async () => {
     return {
-      dropboxAccessToken: store.get('dropboxAccessToken'),
+      accessToken: store.get('accessToken'),
     };
   });
 
   ipc.answerRenderer(channel.dropboxAuthorized, ({ accessToken }) => {
     log.verbose('New Dropbox access token recieved');
-    store.set('dropboxAccessToken', accessToken);
+    store.set('accessToken', accessToken);
   });
 
   ipc.answerRenderer(channel.dropboxUnauthorize, () => {
     try {
       log.verbose('Dropbox access token revoked');
-      store.delete('dropboxAccessToken');
+      store.delete('accessToken');
     } catch (error) {
-      log.error('Could not remove dropboxAccessToken');
+      log.error('Could not remove accessToken');
       log.error(error);
     }
   });

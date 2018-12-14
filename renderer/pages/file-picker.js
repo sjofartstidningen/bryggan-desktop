@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useMemo, useContext } from 'react';
+import React, { useState, useMemo } from 'react';
 import Router from 'next/router';
-import { CancelToken, isCancel } from 'axios';
-import { DropboxContext } from '../context/DropboxContext';
+import * as Dropbox from '../../shared/api/Dropbox';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FetchIndicator } from '../components/FetchIndicator';
 import { FolderList } from '../components/FolderList';
@@ -12,90 +11,36 @@ import { Loading } from '../components/Loading';
 import { Button } from '../components/Button';
 import { sortByType } from '../utils';
 import { minutes } from '../../shared/time';
-import { useInterval, useWindowEvent, useWindowKeypress } from '../hooks';
+import {
+  useInterval,
+  useWindowEvent,
+  useWindowKeypress,
+  useMainStore,
+} from '../hooks';
 import { callMain } from '../utils/ipc';
 import {
-  filePickerGetShowAllFiles,
-  filePickerGetInitialPath,
   filePickerShowAllFilesUpdated,
   filePickerInitialPathUpdated,
   openFolder,
   openFile,
   openInddFile,
+  dropboxUnauthorize,
 } from '../../shared/ipc-channels';
+import { useListFolder, ListFolderStage } from '../hooks/dropbox';
 
 const filterRelevant = showAll => item =>
   showAll || item.type === 'folder' || item.name.endsWith('.indd');
 
-function FilePicker() {
-  const dropbox = useContext(DropboxContext);
-  const [stage, setStage] = useState('initial');
-  const [showAll, setShowAll] = useState(false);
-  const [currentPath, setCurrentPath] = useState(null);
-  const [folderContent, setFolderContent] = useState([]);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    Promise.all([
-      callMain(filePickerGetShowAllFiles),
-      callMain(filePickerGetInitialPath),
-    ])
-      .then(([{ showAllFiles }, { initialPath }]) => {
-        setShowAll(showAllFiles || false);
-        setCurrentPath(initialPath || '/');
-      })
-      .catch(error => {
-        setError(error);
-        setStage('error');
-      });
-  }, []);
-
-  const onListFolderSuccess = ({ items }) => {
-    setFolderContent(items);
-    setError(null);
-    setStage('at-rest');
-  };
-
-  const onListFolderError = error => {
-    if (!isCancel(error)) {
-      setError(error);
-      setStage('error');
-    } else {
-      setStage('at-rest');
-    }
-  };
-
-  useEffect(
-    () => {
-      if (currentPath !== null && dropbox.stage === dropbox.Stage.authorized) {
-        setStage('fetching');
-        const controller = CancelToken.source();
-        dropbox
-          .listFolder(currentPath, {
-            ignoreCache: false,
-            cancelToken: controller.token,
-          })
-          .then(onListFolderSuccess)
-          .catch(onListFolderError);
-
-        return () => controller.cancel();
-      }
-    },
-    [currentPath, dropbox.stage],
-  );
-
-  const refreshFolder = () => {
-    if (currentPath != null && dropbox.stage === dropbox.Stage.authorized) {
-      const controller = CancelToken.source();
-      dropbox
-        .listFolder(currentPath, {
-          ignoreCache: true,
-          cancelToken: controller.token,
-        })
-        .then(onListFolderSuccess)
-        .catch(onListFolderError);
-    }
-  };
+function FilePicker({ accessToken, initialPath, showAllFiles }) {
+  const {
+    stage,
+    currentPath,
+    folderContent,
+    error,
+    setPath,
+    refreshCurrentPath,
+  } = useListFolder({ accessToken, initialPath });
+  const [showAll, setShowAll] = useState(() => showAllFiles);
 
   const filteredFolderContent = useMemo(
     () => folderContent.filter(filterRelevant(showAll)).sort(sortByType),
@@ -103,7 +48,7 @@ function FilePicker() {
   );
 
   const onFolderClick = path => {
-    setCurrentPath(path);
+    setPath(path);
     callMain(filePickerInitialPathUpdated, { initialPath: path });
   };
 
@@ -113,18 +58,18 @@ function FilePicker() {
   };
 
   const onSignOutClick = async () => {
-    setStage('initial');
-    dropbox.revokeToken();
+    await Dropbox.revokeToken({ accessToken });
+    await callMain(dropboxUnauthorize);
     Router.push('/authorize');
   };
 
-  const onOpenFolder = () => callMain(openFolder, { path: currentPath });
+  const onOpenFolderClick = () => callMain(openFolder, { path: currentPath });
   const onFileClick = path => callMain(openFile, { path });
   const onIdFileClick = path => callMain(openInddFile, { path });
 
-  useInterval(refreshFolder, minutes(1).toMilliseconds(), [currentPath]);
-  useWindowKeypress(114, refreshFolder, [currentPath]);
-  useWindowEvent('focus', refreshFolder, [currentPath]);
+  useInterval(refreshCurrentPath, minutes(1).toMilliseconds(), [currentPath]);
+  useWindowKeypress(114, refreshCurrentPath, [currentPath]);
+  useWindowEvent('focus', refreshCurrentPath, [currentPath]);
 
   return (
     <div>
@@ -135,7 +80,7 @@ function FilePicker() {
             onPathClick={({ path }) => onFolderClick(path)}
           />
         </nav>
-        <FetchIndicator isFetching={stage === 'fetching'} />
+        <FetchIndicator isFetching={stage === ListFolderStage.fetching} />
       </Sticky>
 
       <ContextMenu zIndex={4}>
@@ -151,12 +96,12 @@ function FilePicker() {
           </label>
         </ContextMenuItem>
         <ContextMenuItem>
-          <Button type="button" onClick={refreshFolder}>
+          <Button type="button" onClick={refreshCurrentPath}>
             Refresh
           </Button>
         </ContextMenuItem>
         <ContextMenuItem>
-          <Button type="button" onClick={onOpenFolder}>
+          <Button type="button" onClick={onOpenFolderClick}>
             Open current folder
           </Button>
         </ContextMenuItem>
@@ -168,9 +113,12 @@ function FilePicker() {
       </ContextMenu>
 
       <main style={{ zIndex: 1 }}>
-        {stage === 'initial' && <Loading message={'Starting up'} />}
-        {stage === 'error' && <p>{error.message}</p>}
-        {(stage === 'at-rest' || stage === 'fetching') && (
+        {stage === ListFolderStage.initial && (
+          <Loading message={'Starting up'} />
+        )}
+        {stage === ListFolderStage.error && <p>{error.message}</p>}
+        {(stage === ListFolderStage.success ||
+          stage === ListFolderStage.fetching) && (
           <FolderList
             items={filteredFolderContent}
             renderFolder={file => (
@@ -204,6 +152,32 @@ function FilePicker() {
 
 FilePicker.defaultProps = {
   initialPath: '/',
+  showAllFiles: false,
 };
 
-export default FilePicker;
+const FilePickerWrapper = () => {
+  const { settled, response, error } = useMainStore([
+    'initialPath',
+    'showAllFiles',
+    'accessToken',
+  ]);
+
+  if (settled && response && !response.accessToken) {
+    Router.push({
+      pathname: '/authorize',
+      query: { from: '/file-picker' },
+    });
+  }
+
+  return (
+    <div>
+      <main style={{ zIndex: 1 }}>
+        {!settled && <Loading message="Starting up" />}
+        {settled && error && <p>{error.message}</p>}
+        {settled && response && <FilePicker {...response} />}
+      </main>
+    </div>
+  );
+};
+
+export default FilePickerWrapper;

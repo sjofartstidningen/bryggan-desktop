@@ -1,25 +1,27 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import log from 'electron-log';
+import { callMain } from '../utils/ipc';
+import { storeGet } from '../../shared/ipc-channels';
 
-const useInterval = (fn, ms, when) => {
+const useInterval = (fn, ms, inputs) => {
   useEffect(() => {
     const intervalId = setInterval(fn, ms);
     return () => clearInterval(intervalId);
-  }, when);
+  }, inputs);
 };
 
-const useWindowEvent = (event, fn, when) => {
+const useWindowEvent = (event, fn, inputs) => {
   useEffect(() => {
     window.addEventListener(event, fn);
     return () => window.removeEventListener(event, fn);
-  }, when);
+  }, inputs);
 };
 
-const useWindowKeypress = (keyCode, fn, when) => {
-  useWindowEvent('keypress', e => e.keyCode === keyCode && fn(), when);
+const useWindowKeypress = (keyCode, fn, inputs) => {
+  useWindowEvent('keypress', e => e.keyCode === keyCode && fn(), inputs);
 };
 
-const useLog = (level, mountMessage, unmountMessage, when) => {
+const useLog = (level, mountMessage, unmountMessage, inputs) => {
   useEffect(() => {
     if (mountMessage) {
       log[level](mountMessage);
@@ -30,7 +32,7 @@ const useLog = (level, mountMessage, unmountMessage, when) => {
         log[level](unmountMessage);
       };
     }
-  }, when);
+  }, inputs);
 };
 
 const useIsMounted = () => {
@@ -45,4 +47,37 @@ const useIsMounted = () => {
   return () => ref.current;
 };
 
-export { useInterval, useWindowEvent, useWindowKeypress, useLog, useIsMounted };
+const usePromise = (promiseFn, inputs) => {
+  const isMounted = useIsMounted();
+  const [settled, setSettled] = useState(false);
+  const [resolvedValue, setResolvedValue] = useState(null);
+  const [rejectedValue, setRejectedValue] = useState(null);
+
+  useEffect(() => {
+    promiseFn()
+      .then(val => isMounted() && setResolvedValue(val))
+      .catch(val => isMounted() && setRejectedValue(val))
+      .finally(() => isMounted() && setSettled(true));
+  }, inputs);
+
+  return [settled, resolvedValue, rejectedValue];
+};
+
+const useMainStore = (keys = []) => {
+  const [settled, response, error] = usePromise(
+    () => callMain(storeGet, { keys }),
+    [],
+  );
+
+  return { settled, response, error };
+};
+
+export {
+  useInterval,
+  useWindowEvent,
+  useWindowKeypress,
+  useLog,
+  useIsMounted,
+  usePromise,
+  useMainStore,
+};

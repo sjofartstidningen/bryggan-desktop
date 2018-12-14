@@ -18,7 +18,7 @@ setupExceptionHandler(is.development);
 setupListeners();
 
 const getWindowConfig = () => ({
-  page: store.has('dropboxAccessToken') ? 'file-picker' : 'authorize',
+  page: store.has('accessToken') ? 'file-picker' : 'authorize',
 });
 
 (async () => {

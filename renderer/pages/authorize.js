@@ -1,10 +1,15 @@
 import { shell } from 'electron';
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Router from 'next/router';
 import styled, { css } from 'styled-components';
 import { borderRadius } from 'polished';
-import { DropboxContext } from '../context/DropboxContext';
+import log from 'electron-log';
+import qs from 'qs';
+import * as Dropbox from '../../shared/api/Dropbox';
 import { Loading } from '../components/Loading';
+import env from '../../shared/env-config';
+import { callMain } from '../utils/ipc';
+import { dropboxAuthorized } from '../../shared/ipc-channels';
 
 const Section = styled.div`
   position: absolute;
@@ -93,14 +98,20 @@ const Input = styled.input`
 `;
 
 function Authorize() {
-  const dropbox = useContext(DropboxContext);
   const [page, setPage] = useState('authorize');
   const [code, setCode] = useState('');
   const [error, setError] = useState(null);
   const codeInputRef = useRef(null);
 
   const onAuthorizeClick = () => {
-    shell.openExternal(dropbox.getAuthorizeEndpoint());
+    const query = qs.stringify({
+      response_type: 'code',
+      client_id: env.DROPBOX_APP_KEY,
+      require_role: 'work',
+      disable_signup: true,
+    });
+
+    shell.openExternal(`https://www.dropbox.com/oauth2/authorize?${query}`);
     setPage('code-input');
   };
 
@@ -115,9 +126,16 @@ function Authorize() {
   const onSignInClick = async () => {
     try {
       setPage('loading');
-      await dropbox.getToken(code);
-      Router.push('/file-picker');
+      const { accessToken } = await Dropbox.getToken({
+        code,
+        clientId: env.DROPBOX_APP_KEY,
+        clientSecret: env.DROPBOX_APP_SECRET,
+      });
+
+      await callMain(dropboxAuthorized, { accessToken });
+      Router.push(Router.query.from || '/file-picker');
     } catch (error) {
+      log.error(error);
       setError(
         new Error('Could not authorize. Maybe the code is not properly pasted'),
       );

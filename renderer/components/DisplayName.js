@@ -1,7 +1,6 @@
-import { CancelToken, isCancel } from 'axios';
-import { useState, useEffect, useContext } from 'react';
 import PQueue from 'p-queue';
-import { DropboxContext } from '../context/DropboxContext';
+import { getAccount } from '../../shared/api/Dropbox';
+import { useMainStore, usePromise } from '../hooks';
 
 /**
  * This queue is there to prevent fireing of simultaneous calls for the same
@@ -11,30 +10,23 @@ import { DropboxContext } from '../context/DropboxContext';
 const queue = new PQueue({ concurrency: 1 });
 
 function DisplayName({ accountId }) {
-  const [displayName, setDisplayName] = useState('');
-  const dropbox = useContext(DropboxContext);
+  const { settled, response } = useMainStore(['accessToken']);
+  const [, displayName] = usePromise(
+    async () => {
+      if (!response || (response && !response.accessToken)) return '';
+      try {
+        const { account } = await queue.add(() =>
+          getAccount(accountId, {
+            accessToken: response.accessToken,
+          }),
+        );
 
-  useEffect(
-    () => {
-      if (dropbox.stage === dropbox.Stage.authorized) {
-        const controller = CancelToken.source();
-        queue
-          .add(() =>
-            dropbox.getAccount(accountId, {
-              cancelToken: controller.token,
-              ignoreCache: false,
-            }),
-          )
-          .then(({ account }) => setDisplayName(account.displayName))
-          .catch(error => {
-            console.error(error);
-            if (isCancel(error)) return;
-          });
-
-        return () => controller.cancel();
+        return account ? account.displayName : '';
+      } catch (error) {
+        return '';
       }
     },
-    [accountId, dropbox.stage],
+    [settled],
   );
 
   return displayName;
