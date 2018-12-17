@@ -9,7 +9,7 @@ import { hasIdlkFile } from '../../renderer/utils';
 
 async function openDropboxFolder(path) {
   try {
-    const dropboxRoot = await getDropboxRoot();
+    const dropboxRoot = await getDropboxRoot('business');
     const fullPath = join(dropboxRoot, path);
     shell.showItemInFolder(fullPath);
   } catch (error) {
@@ -19,7 +19,7 @@ async function openDropboxFolder(path) {
 
 async function openDropboxFile(path) {
   try {
-    const dropboxRoot = await getDropboxRoot();
+    const dropboxRoot = await getDropboxRoot('business');
     const fullPath = join(dropboxRoot, path);
     shell.openItem(fullPath);
   } catch (error) {
@@ -29,7 +29,7 @@ async function openDropboxFile(path) {
 
 async function openDropboxIndesignFile(path) {
   try {
-    const dropboxRoot = await getDropboxRoot();
+    const dropboxRoot = await getDropboxRoot('business');
     const fullPath = join(dropboxRoot, path);
     await openIndesignFile(fullPath);
   } catch (error) {
@@ -38,32 +38,33 @@ async function openDropboxIndesignFile(path) {
 }
 
 async function openLocalIndesignFile(path) {
-  /**
-   * TODO: Something is wrong with en encoding of the Dropbox path...
-   */
   try {
-    console.log();
-    const dropboxRoot = await getDropboxRoot();
-    const isInsideDropboxFolder = path.match(/dropbox/gi);
+    const dropboxRoot = await getDropboxRoot('business');
+    const isInsideDropboxFolder = path.includes(dropboxRoot);
     const accessToken = store.get('accessToken');
 
-    console.log({
-      correctDropboxRoot:
-        dropboxRoot === '/Users/adam/Dropbox (Sjöfartstidningen)',
-      dropboxRoot,
-      isInsideDropboxFolder,
-      accessToken,
-    });
-
     if (!isInsideDropboxFolder || !accessToken) {
+      /**
+       * If the file is not from within a Dropbox folder the checks can be
+       * ignored and we can let Dropbox do the checks
+       */
       log.verbose(`Opening file ${path} as local`);
       await openIndesignFile(path);
     } else {
-      log.verbose(`Opening file ${path} as Dropbox file`);
+      /**
+       * If the file lives within the dropbox folder we will first check for
+       * existing *.idlk files and if the don't exist open it as normal, or if
+       * it exists – prevent it from being opened
+       */
+      log.verbose(`Will try opening file ${path} as Dropbox file`);
       const dropboxDir = dirname(path.replace(dropboxRoot, ''));
       const { items } = await listFolder(dropboxDir, { accessToken });
       const isLocked = hasIdlkFile({ name: basename(path) }, items);
-      if (isLocked) throw new Error('File locked');
+
+      if (isLocked) {
+        log.verbose(`File is locked`);
+        throw new Error('File locked');
+      }
 
       await openIndesignFile(path);
     }
