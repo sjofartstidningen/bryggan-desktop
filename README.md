@@ -4,7 +4,7 @@
 </div>
 
 <div align="center">
-  <img src="resources/screeshot.png">
+  <img src="resources/screenshot.png">
 </div>
 
 This is a productivity app mainly created for usage inside our company – but it
