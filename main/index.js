@@ -19,6 +19,8 @@ log.transports.console.level = is.development ? 'verbose' : false;
 log.info('---New execution---');
 log.info(`Process args: ${process.argv.join(', ')}`);
 
+let isReady = false;
+
 setupExceptionHandler(is.development);
 setupListeners();
 
@@ -34,6 +36,8 @@ app.on('will-finish-launching', () => {
       log.verbose('Emitting open-file to main-window');
       ipc.callRenderer(windows.get('main-window'), 'open-file');
     }
+
+    if (isReady()) mainWindow.show();
   }, 300);
 
   app.on('open-file', (event, path) => {
@@ -60,6 +64,7 @@ app.on('ready', async () => {
 
   const startupTime = Date.now() - global.init;
   log.info(`Startup time: ${startupTime}ms`);
+  isReady = true;
 
   app.on('activate', () => {
     log.verbose('App reactivated');
