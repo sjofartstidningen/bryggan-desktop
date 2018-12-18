@@ -17,7 +17,7 @@ const getDropboxRoot = async (type = 'business') => {
     const dropboxInfo = join(homeDir, '.dropbox/info.json');
     const content = await readFile(dropboxInfo, 'utf-8');
     const data = JSON.parse(content);
-    return data[type].path.normalize();
+    return data[type].path;
   } catch (err) {
     throw new Error('Could not find Dropbox root folder');
   }

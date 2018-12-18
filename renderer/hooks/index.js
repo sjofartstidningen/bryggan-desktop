@@ -18,7 +18,7 @@ const useWindowEvent = (event, fn, inputs) => {
 };
 
 const useWindowKeypress = (keyCode, fn, inputs) => {
-  useWindowEvent('keypress', e => e.keyCode === keyCode && fn(), inputs);
+  useWindowEvent('keypress', e => e.keyCode === keyCode && fn(e), inputs);
 };
 
 const useLog = (level, mountMessage, unmountMessage, inputs) => {

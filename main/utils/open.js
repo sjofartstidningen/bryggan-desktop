@@ -5,7 +5,7 @@ import { openIndesignFile } from './indesign';
 import { getDropboxRoot } from './dropbox';
 import { listFolder } from '../../shared/api/Dropbox';
 import { store } from '../store';
-import { hasIdlkFile } from '../../renderer/utils';
+import { hasIdlkFile } from '../../shared/utils';
 
 async function openDropboxFolder(path) {
   try {
@@ -40,7 +40,17 @@ async function openDropboxIndesignFile(path) {
 async function openLocalIndesignFile(path) {
   try {
     const dropboxRoot = await getDropboxRoot('business');
-    const isInsideDropboxFolder = path.includes(dropboxRoot);
+
+    /**
+     * Normalize both paths to similar standard since the are not the same
+     * to begin with.
+     * This caused some real trouble when comparing the two strings when one
+     * represented "ö" as "ö" and the other as "0\u0308".
+     */
+    const normalizedPath = path.normalize('NFC');
+    const normalizeDropboxRoot = dropboxRoot.normalize('NFC');
+
+    const isInsideDropboxFolder = normalizedPath.includes(normalizeDropboxRoot);
     const accessToken = store.get('accessToken');
 
     if (!isInsideDropboxFolder || !accessToken) {
@@ -57,8 +67,13 @@ async function openLocalIndesignFile(path) {
        * it exists – prevent it from being opened
        */
       log.verbose(`Will try opening file ${path} as Dropbox file`);
-      const dropboxDir = dirname(path.replace(dropboxRoot, ''));
-      const { items } = await listFolder(dropboxDir, { accessToken });
+      const dropboxDir = dirname(
+        normalizedPath.replace(normalizeDropboxRoot, ''),
+      );
+      const { items } = await listFolder(dropboxDir, {
+        accessToken,
+        ignoreCache: true,
+      });
       const isLocked = hasIdlkFile({ name: basename(path) }, items);
 
       if (isLocked) {
@@ -69,7 +84,6 @@ async function openLocalIndesignFile(path) {
       await openIndesignFile(path);
     }
   } catch (error) {
-    console.error(error);
     throw new Error(`Could not locate or open ${path}`);
   }
 }

@@ -3,6 +3,8 @@ import { app } from 'electron';
 import prepareNext from 'electron-next';
 import log from 'electron-log';
 import { is } from 'electron-util';
+import ipc from 'electron-better-ipc';
+import throttle from 'lodash.throttle';
 import { installDevTools } from './utils/dev-tools';
 import * as mainWindow from './main-window';
 import { setupListeners } from './events';
@@ -10,6 +12,7 @@ import { parallell } from './utils/promise';
 import { store } from './store';
 import { fileQueue } from './utils/FileQueue';
 import { setupExceptionHandler } from '../shared/exception-handler';
+import { windows } from './utils/window-cache';
 
 log.transports.file.level = is.development ? false : 'info';
 log.transports.console.level = is.development ? 'verbose' : false;
@@ -19,13 +22,20 @@ setupExceptionHandler(is.development);
 setupListeners();
 
 const getWindowConfig = () => ({
-  page: 'open-file', // 'file-picker',
+  page: fileQueue.size > 0 ? 'open-file' : 'file-picker',
 });
+
+const throttledOpenFileEmitter = throttle(
+  () => ipc.callRenderer(windows.get('main-window'), 'open-file'),
+  1000,
+);
 
 app.on('open-file', (event, path) => {
   event.preventDefault();
   log.info(`Wants to open file on path: ${path}`);
   fileQueue.push(path);
+
+  if (windows.has('main-window')) throttledOpenFileEmitter();
 });
 
 (async () => {

@@ -15,6 +15,7 @@ const color = {
   lightGrey: rgb(250, 251, 252),
   green: rgb(52, 199, 73),
   red: rgb(252, 96, 92),
+  yellow: rgb(253, 188, 64),
 };
 
 export { font, color };

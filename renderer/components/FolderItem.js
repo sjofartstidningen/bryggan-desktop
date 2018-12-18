@@ -7,7 +7,7 @@ import {
   FilledCircle,
 } from './Icon';
 import { DisplayName } from './DisplayName';
-import { hasIdlkFile } from '../utils';
+import { hasIdlkFile } from '../../shared/utils';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -52,8 +52,8 @@ const IconWrapper = styled.span`
 
 const IndicatorWrapper = styled.span`
   margin-left: auto;
-  color: ${({ canAccess, theme }) =>
-    canAccess ? theme.color.green : theme.color.red};
+  color: ${({ statusColor, canAccess, theme }) =>
+    theme.color[statusColor] || theme.color.grey};
 `;
 
 const FileName = styled.p``;
@@ -91,9 +91,28 @@ function File({ file, onClick }) {
   );
 }
 
+function InDesignStatusFile({ file, onClick, disabled, statusColor, message }) {
+  return (
+    <Wrapper>
+      <Button type="button" onClick={onClick} disabled={disabled}>
+        <IconWrapper aria-hidden="true">
+          <IdIcon />
+        </IconWrapper>
+        <div>
+          <FileName>{file}</FileName>
+          {message && <ModifiedBy>{message}</ModifiedBy>}
+        </div>
+        <IndicatorWrapper statusColor={statusColor}>
+          <FilledCircle />
+        </IndicatorWrapper>
+      </Button>
+    </Wrapper>
+  );
+}
+
 function IdFile({ file, folderContent, onClick }) {
   const canAccess = !hasIdlkFile(file, folderContent);
-
+  const statusColor = canAccess ? 'green' : 'red';
   return (
     <Wrapper>
       <Button type="button" onClick={onClick} disabled={!canAccess}>
@@ -106,7 +125,7 @@ function IdFile({ file, folderContent, onClick }) {
             Last modified by: <DisplayName accountId={file.modifiedBy} />
           </ModifiedBy>
         </div>
-        <IndicatorWrapper canAccess={canAccess}>
+        <IndicatorWrapper statusColor={statusColor}>
           <FilledCircle />
         </IndicatorWrapper>
       </Button>
@@ -114,4 +133,4 @@ function IdFile({ file, folderContent, onClick }) {
   );
 }
 
-export { Folder, File, IdFile };
+export { Folder, File, InDesignStatusFile, IdFile };

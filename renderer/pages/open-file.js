@@ -1,55 +1,37 @@
-import { basename } from 'path';
 import React, { useState, useEffect } from 'react';
 import Router from 'next/router';
-import log from 'electron-log';
-import PQueue from 'p-queue';
 import { Loading } from '../components/Loading';
 import { useMainStore } from '../hooks';
 import { callMain } from '../utils/ipc';
-import { filesGet, fileOpen } from '../../shared/ipc-channels';
-
-const fileProcessQueue = new PQueue({ concurrency: 1 });
+import { filesGet } from '../../shared/ipc-channels';
+import { FileProcessor } from '../components/FileProcessor';
+import { ContextMenu, ContextMenuItem } from '../components/ContextMenu';
+import { Button } from '../components/Button';
 
 function OpenFile({ accessToken }) {
   const [files, setFiles] = useState(() => Router.query.files || []);
-  const [fileInProcess, setFileInProcess] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     callMain(filesGet)
-      .then(({ files }) => setFiles(files))
-      .catch(error => log.error(error));
+      .then(({ files }) => {
+        setFiles(f => [...f, ...files]);
+        setError(null);
+      })
+      .catch(setError);
   }, []);
 
-  const processFile = async file => {
-    setFileInProcess(basename(file));
-    try {
-      await callMain(fileOpen, { path: file });
-    } catch (err) {
-      console.error(err);
-      // void
-    }
-  };
-  // new Promise(resolve => {
-  //   setFileInProcess(basename(file));
-  //   setTimeout(resolve, 1000);
-  // });
-
-  useEffect(
-    () => {
-      if (files.length > 0) {
-        Promise.all(
-          files.map(file => fileProcessQueue.add(() => processFile(file))),
-        ).then(() => {
-          setFileInProcess(null);
-        });
-      }
-    },
-    [files],
+  if (error) return <p>Error: ${error.message}</p>;
+  if (files.length < 1) return <Loading message="Loading" threshold={500} />;
+  return (
+    <ul>
+      {files.map(path => (
+        <li key={path}>
+          <FileProcessor path={path} />
+        </li>
+      ))}
+    </ul>
   );
-
-  const loadingMessage = fileInProcess ? `Opening ${fileInProcess}` : 'Loading';
-
-  return <Loading message={loadingMessage} threshold={500} />;
 }
 
 const OpenFileWrapper = () => {
@@ -62,9 +44,18 @@ const OpenFileWrapper = () => {
     });
   }
 
+  const goToFilePicker = () => Router.push('/file-picker');
+
   return (
     <div>
-      <main style={{ zIndex: 1 }}>
+      <ContextMenu zIndex={4}>
+        <ContextMenuItem>
+          <Button type="button" onClick={goToFilePicker}>
+            Go back
+          </Button>
+        </ContextMenuItem>
+      </ContextMenu>
+      <main style={{ zIndex: 1, padding: '1rem' }}>
         {!settled && <Loading message="Starting up" threshold={300} />}
         {settled && error && <p>{error.message}</p>}
         {settled && response && response.accessToken && (

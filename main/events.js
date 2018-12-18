@@ -83,24 +83,22 @@ function setupListeners() {
   });
 
   /**
-   * Open file related events
+   * Open local files related events
    */
   ipc.answerRenderer(channel.filesGet, async () => {
-    fileQueue.push(
-      '/Users/adam/Dropbox (Sjöfartstidningen)/Tidningen/2018/11/ST_11_18_02_A.indd',
-    );
-    fileQueue.push(
-      '/Users/adam/Dropbox (Sjöfartstidningen)/Tidningen/2018/11/ST_11_18_03_B.indd',
-    );
-
     const files = fileQueue.pop();
     return { files };
   });
 
   ipc.answerRenderer(channel.fileOpen, async ({ path }) => {
-    log.info(`Will try to open ${path}`);
-    await openLocalIndesignFile(path);
-    log.info(`Opened ${path}`);
+    try {
+      log.info(`Will try to open ${path}`);
+      await openLocalIndesignFile(path);
+      log.info(`Opened ${path}`);
+    } catch (error) {
+      console.log({ error });
+      throw error;
+    }
   });
 }
 
