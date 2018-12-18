@@ -8,6 +8,7 @@ import ipc from '../shared/electron-better-ipc';
 import { installDevTools } from './utils/dev-tools';
 import * as mainWindow from './main-window';
 import { setupListeners } from './events';
+import { setupMenus } from './menus';
 import { parallell } from './utils/promise';
 import { store } from './store';
 import { fileQueue } from './utils/FileQueue';
@@ -55,6 +56,7 @@ app.on('ready', async () => {
   await parallell(
     () => prepareNext(path.join(app.getAppPath(), '/renderer')),
     () => installDevTools(),
+    () => setupMenus(),
   );
 
   log.verbose('Next and devtools prepared');
@@ -77,18 +79,3 @@ app.on('window-all-closed', event => event.preventDefault());
 app.on('quit', () => {
   if (is.development) store.clear();
 });
-
-function emitFakeOpenFileEvents(fileNames = []) {
-  const evt = { preventDefault() {} };
-
-  fileNames.forEach(name => {
-    app.emit(
-      'open-file',
-      evt,
-      path.join(
-        app.getPath('home'),
-        `/Dropbox (Sjöfartstidningen)/Tidningen/2018/11/${name}.indd`,
-      ),
-    );
-  });
-}
