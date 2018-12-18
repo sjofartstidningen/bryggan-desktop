@@ -19,7 +19,7 @@ Normally, when opening InDesign-files on your normal harddrive, or through other
 types of servers, InDesign will check .idlk-files associated with the
 InDesign-files.
 
-If an associated .idlk-file is found, **and** if it's not created by the current
+If an associated .idlk-file is found, _and_ if it's not created by the current
 user, InDesign will refuse to open it. But if you do the same thing inside a
 Dropbox-folder every file will seem to, according to your OS, be created by the
 current user. And InDesign will happily open the InDesign-file.
@@ -32,7 +32,7 @@ Dropbox and try to prevent simultaneous edits.
 
 ## Solution
 
-This app, _Bryggan_, can be used as a simple file explorer to traverse your
+This app, **Bryggan**, can be used as a simple file explorer to traverse your
 team-folder contents from the desktop.
 
 And when it encounters an .indd-file it will make an extra check to see if a
@@ -45,8 +45,8 @@ and the files synced by Dropbox to your local computer.
 
 ## Distribution
 
-As of now this app can't be downloaded, it is only distributed internally at our
-company due to the fact that I have'nt yet found a way to properly hide and
+As of now this app can't be downloaded, it's only distributed internally at our
+company due to the fact that I haven't yet found a way to properly hide and
 secure important secrets – specifically the Dropbox Oauth Secret used to
 authenticate users against Dropbox.
 
