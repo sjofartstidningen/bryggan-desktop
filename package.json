@@ -1,7 +1,7 @@
 {
   "name": "bryggan-desktop",
   "productName": "Bryggan",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "My Electron application description",
   "main": "main/entry.js",
   "scripts": {
@@ -9,12 +9,13 @@
     "start": "electron .",
     "start:prod": "yarn build && ELECTRON_IS_DEV=0 yarn start",
     "watch": "nodemon --exec 'yarn start' --watch main --watch shared",
-    "build": "./scripts/icon.js icon indd && next build renderer && next export renderer",
+    "build": "next build renderer && next export renderer",
     "dist": "yarn run build && build",
     "pack": "yarn run build && build --dir",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "semantic-release": "semantic-release"
   },
-  "repository": "git@github.com:sjofartstidningen/bryggan-desktop.git",
+  "repository": "https://github.com/sjofartstidningen/bryggan-desktop.git",
   "author": "Adam Bergman <adam@fransvilhelm.com>",
   "license": "MIT",
   "private": true,
@@ -47,6 +48,10 @@
     "styled-components": "^4.1.2"
   },
   "devDependencies": {
+    "@semantic-release/commit-analyzer": "^6.1.0",
+    "@semantic-release/git": "^7.0.5",
+    "@semantic-release/github": "^5.2.6",
+    "@semantic-release/release-notes-generator": "^7.1.4",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
@@ -67,7 +72,8 @@
     "lint-staged": "^8.1.0",
     "nodemon": "^1.18.7",
     "prettier": "^1.15.2",
-    "react-testing-library": "^5.3.1"
+    "react-testing-library": "^5.3.1",
+    "semantic-release": "^15.13.1"
   },
   "config": {
     "commitizen": {
