@@ -3,3 +3,4 @@ out
 .next
 dist
 env-config.js
+*.iconset
