@@ -1,5 +1,5 @@
-import ipc from 'electron-better-ipc';
 import log from 'electron-log';
+import ipc from '../shared/electron-better-ipc';
 import { store } from './store';
 import {
   openDropboxFile,
@@ -91,14 +91,7 @@ function setupListeners() {
   });
 
   ipc.answerRenderer(channel.fileOpen, async ({ path }) => {
-    try {
-      log.info(`Will try to open ${path}`);
-      await openLocalIndesignFile(path);
-      log.info(`Opened ${path}`);
-    } catch (error) {
-      console.log({ error });
-      throw error;
-    }
+    await openLocalIndesignFile(path);
   });
 }
 

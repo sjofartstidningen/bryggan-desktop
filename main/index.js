@@ -3,8 +3,8 @@ import { app } from 'electron';
 import prepareNext from 'electron-next';
 import log from 'electron-log';
 import { is } from 'electron-util';
-import ipc from 'electron-better-ipc';
-import throttle from 'lodash.throttle';
+import debounce from 'lodash.debounce';
+import ipc from '../shared/electron-better-ipc';
 import { installDevTools } from './utils/dev-tools';
 import * as mainWindow from './main-window';
 import { setupListeners } from './events';
@@ -17,6 +17,7 @@ import { windows } from './utils/window-cache';
 log.transports.file.level = is.development ? false : 'info';
 log.transports.console.level = is.development ? 'verbose' : false;
 log.info('---New execution---');
+log.info(`Process args: ${process.argv.join(', ')}`);
 
 setupExceptionHandler(is.development);
 setupListeners();
@@ -25,21 +26,26 @@ const getWindowConfig = () => ({
   page: fileQueue.size > 0 ? 'open-file' : 'file-picker',
 });
 
-const throttledOpenFileEmitter = throttle(
-  () => ipc.callRenderer(windows.get('main-window'), 'open-file'),
-  1000,
-);
+app.on('will-finish-launching', () => {
+  log.verbose('App will finish launching, setting up open-file listener');
 
-app.on('open-file', (event, path) => {
-  event.preventDefault();
-  log.info(`Wants to open file on path: ${path}`);
-  fileQueue.push(path);
+  const emitOpenFile = debounce(() => {
+    if (windows.has('main-window')) {
+      log.verbose('Emitting open-file to main-window');
+      ipc.callRenderer(windows.get('main-window'), 'open-file');
+    }
+  }, 300);
 
-  if (windows.has('main-window')) throttledOpenFileEmitter();
+  app.on('open-file', (event, path) => {
+    event.preventDefault();
+    log.info(`Wants to open file on path: ${path}`);
+    fileQueue.push(path);
+
+    emitOpenFile();
+  });
 });
 
-(async () => {
-  await app.whenReady();
+app.on('ready', async () => {
   log.verbose('App ready starting execution');
 
   await parallell(
@@ -59,10 +65,25 @@ app.on('open-file', (event, path) => {
     log.verbose('App reactivated');
     mainWindow.show(getWindowConfig());
   });
-})();
+});
 
 app.on('window-all-closed', event => event.preventDefault());
 
 app.on('quit', () => {
   if (is.development) store.clear();
 });
+
+function emitFakeOpenFileEvents(fileNames = []) {
+  const evt = { preventDefault() {} };
+
+  fileNames.forEach(name => {
+    app.emit(
+      'open-file',
+      evt,
+      path.join(
+        app.getPath('home'),
+        `/Dropbox (Sjöfartstidningen)/Tidningen/2018/11/${name}.indd`,
+      ),
+    );
+  });
+}

@@ -2,32 +2,43 @@ import React, { useState, useEffect } from 'react';
 import Router from 'next/router';
 import { Loading } from '../components/Loading';
 import { useMainStore } from '../hooks';
-import { callMain } from '../utils/ipc';
+import { callMain, answerMain } from '../utils/ipc';
 import { filesGet } from '../../shared/ipc-channels';
 import { FileProcessor } from '../components/FileProcessor';
 import { ContextMenu, ContextMenuItem } from '../components/ContextMenu';
 import { Button } from '../components/Button';
+import PQueue from 'p-queue';
+
+const fileProcessQueue = new PQueue({ concurrency: 1 });
 
 function OpenFile({ accessToken }) {
   const [files, setFiles] = useState(() => Router.query.files || []);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const getFiles = () =>
     callMain(filesGet)
       .then(({ files }) => {
-        setFiles(f => [...f, ...files]);
+        setFiles(f => [
+          ...f,
+          ...files.map(path => ({ path, stamp: Date.now() })),
+        ]);
         setError(null);
       })
       .catch(setError);
+
+  useEffect(() => {
+    getFiles();
   }, []);
+
+  useEffect(() => answerMain('open-file', () => getFiles()), []);
 
   if (error) return <p>Error: ${error.message}</p>;
   if (files.length < 1) return <Loading message="Loading" threshold={500} />;
   return (
     <ul>
-      {files.map(path => (
-        <li key={path}>
-          <FileProcessor path={path} />
+      {files.map(({ path, stamp }) => (
+        <li key={`${path}-${stamp}`}>
+          <FileProcessor path={path} queue={fileProcessQueue} />
         </li>
       ))}
     </ul>

@@ -1,4 +1,4 @@
-import ipc from 'electron-better-ipc';
+import ipc from '../../shared/electron-better-ipc';
 
 function waitForRenderer(event, maxDuration = 0) {
   return new Promise((resolve, reject) => {

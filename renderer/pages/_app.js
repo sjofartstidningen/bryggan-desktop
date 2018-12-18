@@ -10,18 +10,20 @@ import { callMain, answerMain } from '../utils/ipc';
 import * as theme from '../style/theme';
 
 class App extends NextApp {
+  unsub = null;
   componentDidMount() {
-    this.setupOpenFileListener();
+    this.unsub = answerMain('open-file', () => {
+      log.info('Transition to /open-file');
+      Router.push('/open-file');
+    });
 
     callMain('main-window-ready').then(() => {
       log.info('Main window ready in renderer process');
     });
   }
 
-  setupOpenFileListener() {
-    answerMain('open-file', () => {
-      Router.push('/open-file');
-    });
+  componentWillUnmount() {
+    if (this.unsub) this.unsub();
   }
 
   render() {

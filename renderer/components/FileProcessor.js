@@ -1,18 +1,15 @@
 import { basename } from 'path';
 import React, { useState, useEffect } from 'react';
-import PQueue from 'p-queue';
 import { callMain } from '../utils/ipc';
 import { fileOpen } from '../../shared/ipc-channels';
 import { InDesignStatusFile } from './FolderItem';
 
-const fileProcessQueue = new PQueue({ concurrency: 1 });
-
-function FileProcessor({ path }) {
+function FileProcessor({ path, queue }) {
   const [state, setState] = useState('waiting');
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    fileProcessQueue.add(async () => {
+    queue.add(async () => {
       setState('processing');
 
       try {
