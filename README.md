@@ -53,7 +53,33 @@ authenticate users against Dropbox.
 If anyone knows of a way to properly hide secrets in an Electron-based
 application – please shout out!
 
+## Releasing
+
+As mentioned [above](#distribution) this software is not distributed in any way
+right now. Instead just sent out internally. So this part is mainly for us to
+keep track of how we release it internally.
+
+1. Every new feature/fix/etc. is developed in it's own branch – several smaller
+   branches might also be batched into one larger branch which later gets merged
+   into master. Commits follow the
+   [conventional-changelog](https://github.com/commitizen/cz-conventional-changelog)
+   standard
+2. Every branch then makes a PR against master and the CI checks must pass (as
+   of now CI only runs tests and builds the front-end part of teh application)
+3. When a PR is accepted it should be rebased and merged (maybe even combine a
+   few commits)
+4. When merged Travis CI runs again on master – this time it also runs
+   [semantic-release](https://github.com/semantic-release/semantic-release).
+   semantic-release will check all commits and determine what the next version
+   should be using cz-conventional-changelog
+5. Once semantic-release is successfull a new [release](/releases) is created
+   then it's time to go manual
+   1. On local machine take the version determined by semantic-release and
+      update the version number in `package.json`
+   2. Run `yarn run dist`
+   3. Upload `dist/Bryggan-${version}.dmg` to our Dropbox servers and notify
+      collegues
+
 ## License
 
-MIT  
-Copyright (c) 2018 sjofartstidningen
+MIT Copyright (c) 2018 sjofartstidningen
