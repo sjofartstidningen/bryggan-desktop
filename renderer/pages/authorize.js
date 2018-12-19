@@ -7,7 +7,6 @@ import log from 'electron-log';
 import qs from 'qs';
 import * as Dropbox from '../../shared/api/Dropbox';
 import { Loading } from '../components/Loading';
-import env from '../../shared/env-config';
 import { callMain } from '../utils/ipc';
 import { dropboxAuthorized } from '../../shared/ipc-channels';
 
@@ -106,7 +105,7 @@ function Authorize() {
   const onAuthorizeClick = () => {
     const query = qs.stringify({
       response_type: 'code',
-      client_id: env.DROPBOX_APP_KEY,
+      client_id: process.env.DROPBOX_OAUTH_CLIENT_ID,
       require_role: 'work',
       disable_signup: true,
     });
@@ -128,8 +127,8 @@ function Authorize() {
       setPage('loading');
       const { accessToken } = await Dropbox.getToken({
         code,
-        clientId: env.DROPBOX_APP_KEY,
-        clientSecret: env.DROPBOX_APP_SECRET,
+        clientId: process.env.DROPBOX_OAUTH_CLIENT_ID,
+        clientSecret: process.env.DROPBOX_OAUTH_CLIENT_SECRET,
       });
 
       await callMain(dropboxAuthorized, { accessToken });
