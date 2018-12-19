@@ -38,7 +38,7 @@ app.on('will-finish-launching', () => {
       ipc.callRenderer(windows.get('main-window'), 'open-file');
     }
 
-    if (isReady()) mainWindow.show();
+    if (isReady) mainWindow.show();
   }, 300);
 
   app.on('open-file', (event, path) => {
