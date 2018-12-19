@@ -1,3 +1,6 @@
+require('dotenv').config();
+const webpack = require('webpack');
+
 const packagesToIgnore = ['electron-better-ipc'];
 
 exports.webpack = config =>
@@ -13,6 +16,13 @@ exports.webpack = config =>
 
         return callback();
       },
+    ],
+    plugins: [
+      ...config.plugins,
+      new webpack.EnvironmentPlugin([
+        'DROPBOX_OAUTH_CLIENT_ID',
+        'DROPBOX_OAUTH_CLIENT_SECRET',
+      ]),
     ],
   });
 
