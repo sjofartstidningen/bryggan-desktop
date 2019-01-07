@@ -1,5 +1,5 @@
 import log from 'electron-log';
-import ipc from '../shared/electron-better-ipc';
+import ipc from 'electron-better-ipc';
 import { store } from './store';
 import {
   openDropboxFile,

@@ -4,7 +4,7 @@ import prepareNext from 'electron-next';
 import log from 'electron-log';
 import { is } from 'electron-util';
 import debounce from 'lodash.debounce';
-import ipc from '../shared/electron-better-ipc';
+import ipc from 'electron-better-ipc';
 import { installDevTools } from './utils/dev-tools';
 import * as mainWindow from './main-window';
 import { setupListeners } from './events';
