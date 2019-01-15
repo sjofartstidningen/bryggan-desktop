@@ -65,7 +65,7 @@ keep track of how we release it internally.
    [conventional-changelog](https://github.com/commitizen/cz-conventional-changelog)
    standard
 2. Every branch then makes a PR against master and the CI checks must pass (as
-   of now CI only runs tests and builds the front-end part of teh application)
+   of now CI only runs tests and builds the front-end part of the application)
 3. When a PR is accepted it should be rebased and merged (maybe even combine a
    few commits)
 4. When merged Travis CI runs again on master – this time it also runs
